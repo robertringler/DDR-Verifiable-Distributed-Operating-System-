@@ -30,11 +30,19 @@ fail regardless of whether `d_sem` is ever built. And two "theorems" (T7
 drift containment, 15.2 equivocation resistance) contain **arithmetic errors**
 that reverse their conclusions.
 
-A **third** finding: the claimed "full TLA+/Rust refinement" of the DDR
-computational layer **cannot be verified from the supplied materials** (Vols
-I–III absent), and the only concrete code artifact in the repository is a
-scaffold whose TLA+ `Next` action holds state constant and increments a
-counter — i.e. there is no refinement mapping to inspect.
+A **third** finding (**updated 2026-06-01** — the DDR specs were subsequently
+supplied; see [`10-ddr-computational-substrate-audit.md`](10-ddr-computational-substrate-audit.md)):
+the claimed "full TLA+/Rust refinement" of the DDR computational layer is
+**exhibited but property-*tested*, not *proven*** — the TLA+↔Rust mapping is a
+real `to_spec_state()` method whose simulation condition is checked by a
+`proptest` suite (sound-incomplete), the TLA+ `THEOREM`s are declared but not
+discharged (no TLC results / no proof), and the BFT safety proof covers only
+the single-round case, omitting the cross-round locked-QC argument that is the
+core of HotStuff safety. Verdict: **validated engineering, not mechanized
+verification.** Volume III reproduces the CIIR pattern — a competent substrate
+wrapped in category theory that is vacuous (a 2-category that collapses to a
+poset), dual-confused (colimit vs. terminal object), or a non-sequitur
+("unification" by typed interfaces with no compositionality theorem).
 
 ## Contents
 
@@ -50,6 +58,7 @@ counter — i.e. there is no refinement mapping to inspect.
 | 8 | [`07-academic-strategy.md`](07-academic-strategy.md) | Minimum publishable units now vs. gated; 24-month paper roadmap |
 | 9 | [`08-commercialization-sovereign.md`](08-commercialization-sovereign.md) | Market, moat, sovereign brief, investment memo (incl. "reasons to pass") |
 | 10 | [`09-execution-prioritization.md`](09-execution-prioritization.md) | Priority matrix; the single best 7/30/90-day action |
+| + | [`10-ddr-computational-substrate-audit.md`](10-ddr-computational-substrate-audit.md) | **Addendum** (2026-06-01): audit of the now-supplied DDR computational substrate (Vols I–II) and Volume III; resolves the refinement tension |
 
 ## Classification legend (Prime Directive)
 
@@ -63,11 +72,14 @@ counter — i.e. there is no refinement mapping to inspect.
 
 - **Verified directly:** the full text of the unified specification, every
   definition and theorem statement, and every proof / proof-sketch in it.
-- **Could not verify:** DDR Volumes I–III (consensus, execution, governance,
-  zk-attestation) were referenced but **not provided**. All claims that
-  "follow from DDR Vol. III Thm. X.Y" are therefore treated as **CONDITIONAL on
-  an unseen artifact**. Where the unified spec leans on the DDR substrate
-  (T6, T10, 8.2, 10.2), that dependency is flagged.
+- **Now verified (2026-06-01):** the DDR computational substrate (*DDR Formal
+  Specification*, 25 modules — the Vols I–II content) and *Volume III: Unified
+  Civilization Substrate* were supplied and audited in
+  [`10-ddr-computational-substrate-audit.md`](10-ddr-computational-substrate-audit.md).
+  Claims previously treated as "CONDITIONAL on an unseen artifact" are now
+  assessed directly. (Note: the supplied set covers the computational +
+  higher-categorical volumes; the original unified spec's `d_sem`/`κ` gap is
+  unaffected — those objects do not appear in these volumes either.)
 - **Independently inspected:** the repository scaffold (`ddr-verifiable-
   distributed-os.zip`) — empty crates + a trivial TLA+ stub; it does not
   exhibit the refinement the prose claims.
