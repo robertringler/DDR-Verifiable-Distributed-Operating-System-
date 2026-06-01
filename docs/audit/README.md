@@ -59,6 +59,23 @@ poset), dual-confused (colimit vs. terminal object), or a non-sequitur
 | 9 | [`08-commercialization-sovereign.md`](08-commercialization-sovereign.md) | Market, moat, sovereign brief, investment memo (incl. "reasons to pass") |
 | 10 | [`09-execution-prioritization.md`](09-execution-prioritization.md) | Priority matrix; the single best 7/30/90-day action |
 | + | [`10-ddr-computational-substrate-audit.md`](10-ddr-computational-substrate-audit.md) | **Addendum** (2026-06-01): audit of the now-supplied DDR computational substrate (Vols I–II) and Volume III; resolves the refinement tension |
+| + | [`11-ciir-monograph-reaudit.md`](11-ciir-monograph-reaudit.md) | **Second-reviewer re-audit** (2026-06-01): the CIIR monograph itself, read as primary source — does it construct `d_sem`, `κ<1`, `Π_C`? |
+
+> **Fourth finding (added 2026-06-01, after the CIIR monograph was located and
+> read as primary source — see [`11-ciir-monograph-reaudit.md`](11-ciir-monograph-reaudit.md)):**
+> the monograph is a competent operator-algebra / open-quantum-systems
+> construction — but it grounds a *different* program (quantum foundations) than
+> the integration needs (semantic regulation). The integration's `d_sem`,
+> `I_intent`, and `Φ_rec`-contraction share **symbols** with the monograph's
+> `Φ` (interface map), `κ` (curvature scalar — *not* a contraction constant),
+> `M` (constraint manifold), and `Π_C` — but **not their referents**. The
+> apparent grounding is largely homonymy. The one object genuinely inherited is
+> an **open problem**: the observer fixed-point `Π_C` is, by the monograph's own
+> admission (ch22), *assumed not derived*. The monograph's own red-team (ch09)
+> rates its novel dynamics "Fatal if physical," and its cross-domain chapters
+> formalize **astrology** (ch19). Net: two stacked agendas; the lower one is
+> itself open at the load-bearing joint, and the entire stack stands only on
+> classical mathematics (Banach, GKLS semigroups).
 
 ## Classification legend (Prime Directive)
 
