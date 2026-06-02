@@ -8,3 +8,5 @@ license.workspace = true
 ddr-core = { path = "../crates/ddr-core" }
 ddr-consensus = { path = "../crates/ddr-consensus" }
 ddr-chain = { path = "../crates/ddr-chain" }
+ddr-exec = { path = "../crates/ddr-exec" }
+wat = "1"

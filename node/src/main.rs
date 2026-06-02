@@ -10,6 +10,7 @@ use std::collections::BTreeSet;
 use ddr_chain::{Chain, HandoffQc, ValidatorSet};
 use ddr_consensus::{run, search_for_violation, Config};
 use ddr_core::{reduce, StateRoot, Tx};
+use ddr_exec::{verify_trace, ExecTx, WasmKernel};
 
 fn main() {
     println!("== DDR Milestone 1 ==\n");
@@ -95,4 +96,30 @@ fn main() {
     };
     println!("  forged (1-signer) handoff rejected: {:?}", chain.apply_handoff(&forged).is_err());
     println!("\nConclusion: validator rotation is anchored, monotonic, and quorum-gated — no cross-epoch fork.");
+
+    // 5. Deterministic WASM execution + replay (M2).
+    println!("\n[exec] deterministic wasm_ddr execution + replay:");
+    let muladd = wat::parse_str(
+        r#"(module (func (export "apply") (param i64 i64) (result i64)
+             local.get 0 i64.const 2 i64.mul local.get 1 i64.add))"#,
+    )
+    .unwrap();
+    let kernel = WasmKernel::from_wasm(&muladd).expect("admissible module");
+    let log: Vec<ExecTx> = [3u64, 5, 7, 11].iter().map(|x| ExecTx(*x)).collect();
+    let (state, root, receipts) = kernel.run(StateRoot::zero(), 0, &log).unwrap();
+    println!("  executed {} txs -> state={state}, root={:?}", log.len(), root);
+    println!("  replay verifies: {}", verify_trace(&kernel, StateRoot::zero(), 0, &receipts).unwrap());
+    let mut tampered = receipts.clone();
+    tampered[1].tx ^= 1;
+    println!(
+        "  tampered trace rejected: {}",
+        !verify_trace(&kernel, StateRoot::zero(), 0, &tampered).unwrap()
+    );
+    let float = wat::parse_str(
+        r#"(module (func (export "apply") (param i64 i64) (result i64)
+             f64.const 1 drop local.get 0))"#,
+    )
+    .unwrap();
+    println!("  float module rejected by validator: {}", WasmKernel::from_wasm(&float).is_err());
+    println!("\nConclusion: execution is deterministic, replay is bit-perfect, and the wasm_ddr gate holds.");
 }

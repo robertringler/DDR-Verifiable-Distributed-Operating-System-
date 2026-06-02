@@ -1,0 +1,13 @@
+[package]
+name = "ddr-exec"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ddr-core = { path = "../ddr-core" }
+wasmi = "1.0"
+wasmparser = "0.251"
+
+[dev-dependencies]
+wat = "1"

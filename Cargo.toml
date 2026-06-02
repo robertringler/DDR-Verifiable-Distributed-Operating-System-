@@ -4,6 +4,7 @@ members = [
     "crates/ddr-core",
     "crates/ddr-consensus",
     "crates/ddr-chain",
+    "crates/ddr-exec",
     "node",
 ]
 
