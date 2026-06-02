@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/ddr-core",
     "crates/ddr-consensus",
+    "crates/ddr-chain",
     "node",
 ]
 

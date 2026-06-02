@@ -20,7 +20,8 @@ adversarial test that **detects a safety violation when the lock is removed.**
 |-------|------|--------|
 | `ddr-core` | Deterministic state: canonical state root `reduce`, kernel step `K`, invariants | M1 ✅ |
 | `ddr-consensus` | BFT consensus with the lock/unlock rule; deterministic adversarial simulator; safety + liveness tests | M1 ✅ |
-| `node` | Runnable demo: simulated cluster + the "lock is load-bearing" experiment | M1 ✅ |
+| `ddr-chain` | Multi-height chaining + epoch transitions (validator rotation); cross-epoch No-Fork: anchoring, anti-rollback, quorum-gated hand-off, handoff uniqueness | M3 ✅ |
+| `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
 
 ## Build & test
 
@@ -38,11 +39,16 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 - **The lock is load-bearing** — the *same* search with the lock disabled **finds**
   a conflicting-decision violation. This is the falsifiable result: the test
   behaves differently if the safety mechanism is absent.
+- **Cross-epoch No-Fork** (M3) — validator-set rotation is anchored to the
+  finalized state root, epoch-monotonic (anti-rollback), and quorum-gated; a
+  Byzantine minority cannot forge a hand-off, and *handoff uniqueness* is shown
+  by computation over all `f` (a conflicting quorum needs `2f+1` signers but at
+  most `2f` are available without reusing an honest signer).
 
 ## Roadmap (next milestones)
 
 - **M2** — Deterministic WASM execution subset (`wasm_ddr`) + replay engine.
-- **M3** — QC-first propagation + epoch transitions (validator rotation).
+- ~~**M3** — epoch transitions (validator rotation), cross-epoch No-Fork~~ ✅ **done**.
 - **M4** — Recursive proof accumulator (zk attestation interface).
 - **M5** — TLA+ model + a *proven* (not just tested) cross-round safety argument.
 

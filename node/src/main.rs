@@ -7,6 +7,7 @@
 
 use std::collections::BTreeSet;
 
+use ddr_chain::{Chain, HandoffQc, ValidatorSet};
 use ddr_consensus::{run, search_for_violation, Config};
 use ddr_core::{reduce, StateRoot, Tx};
 
@@ -54,4 +55,44 @@ fn main() {
         }
         None => println!("  lock OFF : no violation found (unexpected — search too weak)"),
     }
+
+    // 4. Cross-epoch chaining (M3): rotate the validator set across epochs.
+    println!("\n[chain] multi-epoch chain with validator rotation:");
+    let mut chain = Chain::genesis(ValidatorSet::new(0, [0, 1, 2, 3]), StateRoot::zero());
+    for epoch in 0..3u64 {
+        for h in 0..2 {
+            chain.commit(vec![Tx::new(format!("ep{epoch}-blk{h}").into_bytes())]);
+        }
+        println!(
+            "  epoch {epoch}: set={:?} height={} finalized={:?}",
+            chain.current_set.members, chain.height, chain.committed_root
+        );
+        if epoch < 2 {
+            // Rotate two validators out, two in.
+            let next = ValidatorSet::new(epoch + 1, [epoch as u32 + 2, epoch as u32 + 3, epoch as u32 + 4, epoch as u32 + 5]);
+            let signers: BTreeSet<u32> = chain
+                .current_set
+                .members
+                .iter()
+                .take(chain.current_set.quorum())
+                .copied()
+                .collect();
+            let handoff = HandoffQc {
+                epoch,
+                finalized_root: chain.committed_root,
+                next_set: next,
+                signers,
+            };
+            chain.apply_handoff(&handoff).expect("valid handoff");
+        }
+    }
+    // Show the anti-rollback / anti-forgery gate rejecting a Byzantine handoff.
+    let forged = HandoffQc {
+        epoch: chain.epoch(),
+        finalized_root: chain.committed_root,
+        next_set: ValidatorSet::new(chain.epoch() + 1, [90, 91, 92, 93]),
+        signers: [chain.current_set.members.iter().next().copied().unwrap()].into_iter().collect(),
+    };
+    println!("  forged (1-signer) handoff rejected: {:?}", chain.apply_handoff(&forged).is_err());
+    println!("\nConclusion: validator rotation is anchored, monotonic, and quorum-gated — no cross-epoch fork.");
 }

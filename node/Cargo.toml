@@ -7,3 +7,4 @@ license.workspace = true
 [dependencies]
 ddr-core = { path = "../crates/ddr-core" }
 ddr-consensus = { path = "../crates/ddr-consensus" }
+ddr-chain = { path = "../crates/ddr-chain" }

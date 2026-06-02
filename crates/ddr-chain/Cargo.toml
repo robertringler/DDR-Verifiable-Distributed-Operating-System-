@@ -1,0 +1,9 @@
+[package]
+name = "ddr-chain"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ddr-core = { path = "../ddr-core" }
+ddr-consensus = { path = "../ddr-consensus" }
