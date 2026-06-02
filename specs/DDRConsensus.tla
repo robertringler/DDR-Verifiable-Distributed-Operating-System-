@@ -114,6 +114,21 @@ Agreement ==
   \A v, w \in Correct :
      (decided[v].has /\ decided[w].has) => (decided[v].value = decided[w].value)
 
+(***************************************************************************)
+(* The inductive invariant behind the unbounded paper proof (M5b,          *)
+(* docs/audit/13-unbounded-safety-proof.md): once a value V is committed at *)
+(* round r1, every polka at any round >= r1 is for V. TLC confirms SafeInv  *)
+(* holds on all reachable states of the bounded model; the paper proof      *)
+(* shows it is inductive for all n, f<n/3 and unbounded rounds. SafeInv =>  *)
+(* Agreement (a second commit needs a later polka for its value).          *)
+(***************************************************************************)
+PolkaT(rr, val)  == Cnt(prevotes, rr, val) >= q
+CommitT(rr, val) == Cnt(precommits, rr, val) >= q
+
+SafeInv ==
+  \A r1 \in 0..r, V \in Values, r2 \in 0..r, W \in Values :
+     (CommitT(r1, V) /\ r2 >= r1 /\ PolkaT(r2, W)) => (W = V)
+
 \* Type sanity (cheap, helps catch modeling slips).
 TypeOK ==
   /\ r \in 0..(MaxRound + 1)

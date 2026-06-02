@@ -22,7 +22,7 @@ adversarial test that **detects a safety violation when the lock is removed.**
 | `ddr-consensus` | BFT consensus with the lock/unlock rule; deterministic adversarial simulator; safety + liveness tests | M1 ✅ |
 | `ddr-chain` | Multi-height chaining + epoch transitions (validator rotation); cross-epoch No-Fork: anchoring, anti-rollback, quorum-gated hand-off, handoff uniqueness | M3 ✅ |
 | `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
-| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive bounded model check + counterexample without the lock) | M5 ✅ (bounded) |
+| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + the `SafeInv` inductive invariant | M5 ✅ |
 
 ## Build & test
 
@@ -51,10 +51,13 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 - **M2** — Deterministic WASM execution subset (`wasm_ddr`) + replay engine.
 - ~~**M3** — epoch transitions (validator rotation), cross-epoch No-Fork~~ ✅ **done**.
 - **M4** — Recursive proof accumulator (zk attestation interface).
-- ~~**M5** — TLA⁺ model + TLC-discharged cross-round safety (bounded)~~ ✅ **done**;
+- ~~**M5** — TLA⁺ model + TLC-discharged cross-round safety (n=4,f=1 and n=7,f=2)~~ ✅;
   see [`docs/audit/12-verification-tlc.md`](docs/audit/12-verification-tlc.md).
-- **M5b** — lift the bounded check to *unbounded* via an Apalache/TLAPS
-  inductive invariant (removes the `n=4`/round bound → safety for all `f<n/3`).
+- ~~**M5b** — *unbounded* safety: inductive-invariant paper proof for all `n≥3f+1`,
+  unbounded rounds~~ ✅ `[PROVEN — paper]`; invariant `SafeInv` machine-confirmed by
+  TLC. See [`docs/audit/13-unbounded-safety-proof.md`](docs/audit/13-unbounded-safety-proof.md).
+- **M5c** — mechanize the inductive step (Apalache/TLAPS) → drop the "by hand"
+  caveat. Apalache 0.58 installed; `SafeInv` is written as the target.
 
 ## Verify the safety theorem
 
