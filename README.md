@@ -22,6 +22,7 @@ adversarial test that **detects a safety violation when the lock is removed.**
 | `ddr-consensus` | BFT consensus with the lock/unlock rule; deterministic adversarial simulator; safety + liveness tests | M1 ✅ |
 | `ddr-chain` | Multi-height chaining + epoch transitions (validator rotation); cross-epoch No-Fork: anchoring, anti-rollback, quorum-gated hand-off, handoff uniqueness | M3 ✅ |
 | `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
+| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive bounded model check + counterexample without the lock) | M5 ✅ (bounded) |
 
 ## Build & test
 
@@ -50,7 +51,16 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 - **M2** — Deterministic WASM execution subset (`wasm_ddr`) + replay engine.
 - ~~**M3** — epoch transitions (validator rotation), cross-epoch No-Fork~~ ✅ **done**.
 - **M4** — Recursive proof accumulator (zk attestation interface).
-- **M5** — TLA+ model + a *proven* (not just tested) cross-round safety argument.
+- ~~**M5** — TLA⁺ model + TLC-discharged cross-round safety (bounded)~~ ✅ **done**;
+  see [`docs/audit/12-verification-tlc.md`](docs/audit/12-verification-tlc.md).
+- **M5b** — lift the bounded check to *unbounded* via an Apalache/TLAPS
+  inductive invariant (removes the `n=4`/round bound → safety for all `f<n/3`).
+
+## Verify the safety theorem
+
+```bash
+cd specs && ./check.sh   # TLC: lock ON ⇒ no error (exhaustive); lock OFF ⇒ counterexample
+```
 
 See `docs/audit/05-poc-system.md` for the CIIR/semantic PoC — deliberately
 separate, because that program depends on unbuilt objects (`d_sem`, `κ<1`).

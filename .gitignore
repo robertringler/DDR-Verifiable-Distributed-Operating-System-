@@ -1,2 +1,5 @@
 /target
 **/*.rs.bk
+/tools/tla2tools.jar
+specs/states/
+*.st

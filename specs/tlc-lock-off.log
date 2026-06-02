@@ -1,0 +1,82 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 105 and seed -2556705176262864911 with 4 workers on 4 cores with 3575MB heap and 64MB offheap memory [pid: 2967] (Linux 6.18.5 amd64, Ubuntu 21.0.10 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/user/DDR-Verifiable-Distributed-Operating-System-/specs/DDRConsensus.tla
+Parsing file /tmp/Integers.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Naturals.tla
+Parsing file /tmp/Sequences.tla
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module DDRConsensus
+Starting... (2026-06-02 22:22:11)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-06-02 22:22:12.
+Error: Invariant Agreement is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ precommits = {}
+/\ decided = ( v1 :> [has |-> FALSE, value |-> a] @@
+  v2 :> [has |-> FALSE, value |-> a] @@
+  v3 :> [has |-> FALSE, value |-> a] @@
+  v4 :> [has |-> FALSE, value |-> a] )
+/\ prevotes = {}
+/\ r = 0
+/\ locked = ( v1 :> [has |-> FALSE, value |-> a, round |-> 0] @@
+  v2 :> [has |-> FALSE, value |-> a, round |-> 0] @@
+  v3 :> [has |-> FALSE, value |-> a, round |-> 0] @@
+  v4 :> [has |-> FALSE, value |-> a, round |-> 0] )
+
+State 2: <DoRound line 64, col 3 to line 102, col 30 of module DDRConsensus>
+/\ precommits = { [val |-> a, rnd |-> 0, src |-> v1],
+  [val |-> a, rnd |-> 0, src |-> v2],
+  [val |-> a, rnd |-> 0, src |-> v4],
+  [val |-> b, rnd |-> 0, src |-> v4] }
+/\ decided = ( v1 :> [has |-> TRUE, value |-> a] @@
+  v2 :> [has |-> TRUE, value |-> a] @@
+  v3 :> [has |-> FALSE, value |-> a] @@
+  v4 :> [has |-> FALSE, value |-> a] )
+/\ prevotes = { [val |-> a, rnd |-> 0, src |-> v1],
+  [val |-> a, rnd |-> 0, src |-> v2],
+  [val |-> a, rnd |-> 0, src |-> v4],
+  [val |-> b, rnd |-> 0, src |-> v4] }
+/\ r = 1
+/\ locked = ( v1 :> [has |-> TRUE, value |-> a, round |-> 0] @@
+  v2 :> [has |-> TRUE, value |-> a, round |-> 0] @@
+  v3 :> [has |-> FALSE, value |-> a, round |-> 0] @@
+  v4 :> [has |-> FALSE, value |-> a, round |-> 0] )
+
+State 3: <DoRound line 64, col 3 to line 102, col 30 of module DDRConsensus>
+/\ precommits = { [val |-> a, rnd |-> 0, src |-> v1],
+  [val |-> a, rnd |-> 0, src |-> v2],
+  [val |-> a, rnd |-> 0, src |-> v4],
+  [val |-> a, rnd |-> 1, src |-> v4],
+  [val |-> b, rnd |-> 0, src |-> v4],
+  [val |-> b, rnd |-> 1, src |-> v1],
+  [val |-> b, rnd |-> 1, src |-> v2],
+  [val |-> b, rnd |-> 1, src |-> v3],
+  [val |-> b, rnd |-> 1, src |-> v4] }
+/\ decided = ( v1 :> [has |-> TRUE, value |-> a] @@
+  v2 :> [has |-> TRUE, value |-> a] @@
+  v3 :> [has |-> TRUE, value |-> b] @@
+  v4 :> [has |-> FALSE, value |-> a] )
+/\ prevotes = { [val |-> a, rnd |-> 0, src |-> v1],
+  [val |-> a, rnd |-> 0, src |-> v2],
+  [val |-> a, rnd |-> 0, src |-> v4],
+  [val |-> a, rnd |-> 1, src |-> v4],
+  [val |-> b, rnd |-> 0, src |-> v4],
+  [val |-> b, rnd |-> 1, src |-> v1],
+  [val |-> b, rnd |-> 1, src |-> v2],
+  [val |-> b, rnd |-> 1, src |-> v3],
+  [val |-> b, rnd |-> 1, src |-> v4] }
+/\ r = 2
+/\ locked = ( v1 :> [has |-> TRUE, value |-> b, round |-> 1] @@
+  v2 :> [has |-> TRUE, value |-> b, round |-> 1] @@
+  v3 :> [has |-> TRUE, value |-> b, round |-> 1] @@
+  v4 :> [has |-> FALSE, value |-> a, round |-> 0] )
+
+678 states generated, 167 distinct states found, 140 states left on queue.
+The depth of the complete state graph search is 5.
+The average outdegree of the complete state graph is 8 (minimum is 0, the maximum 8 and the 95th percentile is 8).
+Finished in 01s at (2026-06-02 22:22:12)
