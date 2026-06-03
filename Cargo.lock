@@ -49,6 +49,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ddr"
+version = "0.1.0"
+dependencies = [
+ "ddr-attest",
+ "ddr-chain",
+ "ddr-consensus",
+ "ddr-core",
+ "ddr-exec",
+ "wat",
+]
+
+[[package]]
 name = "ddr-attest"
 version = "0.1.0"
 dependencies = [

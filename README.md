@@ -23,6 +23,7 @@ adversarial test that **detects a safety violation when the lock is removed.**
 | `ddr-chain` | Multi-height chaining + epoch transitions (validator rotation); cross-epoch No-Fork: anchoring, anti-rollback, quorum-gated hand-off, handoff uniqueness | M3 ✅ |
 | `ddr-exec` | `wasm_ddr` subset validator + deterministic execution kernel `K` (pure-Rust `wasmi`) + bit-perfect replay; `dag`: DAG-scheduled parallel execution = sequential (Thm 8.2) | M2/M2b ✅ |
 | `ddr-attest` | Recursive attestation accumulator (Merkle Mountain Range): single history commitment + external O(log n) inclusion proofs + tamper evidence | M4 ✅ |
+| `ddr` | Umbrella facade re-exporting the layers + the **end-to-end lifecycle test** (consensus → execution → chain/epochs → attestation, externally verified, replay-deterministic, tamper-evident) | ✅ |
 | `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
 | `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + the `SafeInv` inductive invariant | M5 ✅ |
 

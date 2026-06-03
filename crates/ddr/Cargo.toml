@@ -1,0 +1,16 @@
+[package]
+name = "ddr"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "DDR — umbrella facade re-exporting the runtime layers, and home of the end-to-end lifecycle test."
+
+[dependencies]
+ddr-core = { path = "../ddr-core" }
+ddr-consensus = { path = "../ddr-consensus" }
+ddr-chain = { path = "../ddr-chain" }
+ddr-exec = { path = "../ddr-exec" }
+ddr-attest = { path = "../ddr-attest" }
+
+[dev-dependencies]
+wat = "1"
