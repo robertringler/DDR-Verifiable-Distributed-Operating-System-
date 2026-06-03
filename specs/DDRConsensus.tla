@@ -129,6 +129,51 @@ SafeInv ==
   \A r1 \in 0..r, V \in Values, r2 \in 0..r, W \in Values :
      (CommitT(r1, V) /\ r2 >= r1 /\ PolkaT(r2, W)) => (W = V)
 
+(***************************************************************************)
+(* The FULL inductive invariant behind the unbounded paper proof: SafeInv  *)
+(* plus the support conjuncts the proof relies on. TLC confirms the whole   *)
+(* conjunction holds on every reachable state (n=4 and n=7) — so every      *)
+(* clause of the hand proof is a genuine invariant of the model, not just   *)
+(* the headline SafeInv.                                                    *)
+(***************************************************************************)
+PV(rr, vv, v) == [rnd |-> rr, val |-> vv, src |-> v]
+
+\* Votes only ever concern rounds strictly before the current one.
+PastVotes ==
+  /\ \A m \in prevotes   : m.rnd < r
+  /\ \A m \in precommits : m.rnd < r
+
+\* An honest validator casts at most one prevote / precommit per round.
+UniqueVotes ==
+  \A v \in Correct, rr \in 0..r :
+    /\ Cardinality({ vv \in Values : PV(rr, vv, v) \in prevotes })   <= 1
+    /\ Cardinality({ vv \in Values : PV(rr, vv, v) \in precommits }) <= 1
+
+\* An honest precommit is backed by a polka at the same round.
+PrecommitJustified ==
+  \A m \in precommits : m.src \in Correct => PolkaT(m.rnd, m.val)
+
+\* An honest lock equals that validator's highest-round precommit.
+LockJustified ==
+  \A v \in Correct :
+    locked[v].has =>
+      /\ PV(locked[v].round, locked[v].value, v) \in precommits
+      /\ \A m \in precommits : m.src = v => m.rnd <= locked[v].round
+
+\* Lock pinning: once V is committed at r1, every honest lock at a round >= r1
+\* is on V. (This is the conjunct that makes SafeInv's induction close.)
+LockPin ==
+  \A v \in Correct, r1 \in 0..r, V \in Values :
+    (CommitT(r1, V) /\ locked[v].has /\ locked[v].round >= r1) => locked[v].value = V
+
+IndInv ==
+  /\ PastVotes
+  /\ UniqueVotes
+  /\ PrecommitJustified
+  /\ LockJustified
+  /\ LockPin
+  /\ SafeInv
+
 \* Type sanity (cheap, helps catch modeling slips).
 TypeOK ==
   /\ r \in 0..(MaxRound + 1)
