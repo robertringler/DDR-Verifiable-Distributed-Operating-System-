@@ -61,8 +61,11 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 - ~~**M5b** — *unbounded* safety: inductive-invariant paper proof for all `n≥3f+1`,
   unbounded rounds~~ ✅ `[PROVEN — paper]`; invariant `SafeInv` machine-confirmed by
   TLC. See [`docs/audit/13-unbounded-safety-proof.md`](docs/audit/13-unbounded-safety-proof.md).
-- **M5c** — mechanize the inductive step (Apalache/TLAPS) → drop the "by hand"
-  caveat. Apalache 0.58 installed; `SafeInv` is written as the target.
+- ~~**M5c** — mechanize the inductive step (Apalache)~~ ✅ **done** — Apalache discharges
+  `Init⇒IndInv`, `IndInv∧Next⇒IndInv'`, `IndInv⇒Agreement` for n=4 (and *found* a
+  missing conjunct, `LockComplete`). See [`docs/audit/14-inductive-invariant-verification.md`](docs/audit/14-inductive-invariant-verification.md).
+- **M5c+** — lift the inductive proof to *unbounded rounds* (Apalache `Gen`) and
+  *parametric n* (TLAPS).
 
 ## Verify the safety theorem
 

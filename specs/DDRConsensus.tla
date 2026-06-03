@@ -160,6 +160,11 @@ LockJustified ==
       /\ PV(locked[v].round, locked[v].value, v) \in precommits
       /\ \A m \in precommits : m.src = v => m.rnd <= locked[v].round
 
+\* Converse of LockJustified, discovered necessary by the Apalache inductive
+\* check: an honest validator that has precommitted is locked.
+LockComplete ==
+  \A v \in Correct : (\E m \in precommits : m.src = v) => locked[v].has
+
 \* Lock pinning: once V is committed at r1, every honest lock at a round >= r1
 \* is on V. (This is the conjunct that makes SafeInv's induction close.)
 LockPin ==
@@ -171,6 +176,7 @@ IndInv ==
   /\ UniqueVotes
   /\ PrecommitJustified
   /\ LockJustified
+  /\ LockComplete
   /\ LockPin
   /\ SafeInv
 

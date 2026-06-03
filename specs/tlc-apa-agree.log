@@ -1,0 +1,68 @@
+# Usage statistics is OFF. We care about your privacy.
+# If you want to help our project, consider enabling statistics with config --enable-stats=true.
+
+Output directory: /home/user/DDR-Verifiable-Distributed-Operating-System-/specs/_apalache-out/DDRConsensusApa.tla/2026-06-03T03-20-50_9261242652227397193
+# APALACHE version: 0.58.0 | build: 711dce6                       I@03:20:50.614
+Tuning: search.outputTraces=false                                 I@03:20:50.645
+PASS #0: SanyParser                                               I@03:20:50.904
+PASS #1: TypeCheckerSnowcat                                       I@03:20:51.327
+ > Running Snowcat .::.                                           I@03:20:51.327
+ > Your types are purrfect!                                       I@03:20:52.104
+ > All expressions are typed                                      I@03:20:52.104
+PASS #2: ConfigurationPass                                        I@03:20:52.105
+  > Set the initialization predicate to CInit                     I@03:20:52.110
+  > Set the transition predicate to Next                          I@03:20:52.111
+  > Set the constant initialization predicate to ConstInit        I@03:20:52.111
+  > Set an invariant to Agreement                                 I@03:20:52.111
+PASS #3: DesugarerPass                                            I@03:20:52.117
+  > Desugaring...                                                 I@03:20:52.117
+PASS #4: InlinePass                                               I@03:20:52.135
+Leaving only relevant operators: Agreement, CInit, CInitPrimed, ConstInit, ConstInitPrimed, Next I@03:20:52.135
+PASS #5: TemporalPass                                             I@03:20:52.208
+  > Rewriting temporal operators...                               I@03:20:52.208
+  > No temporal property specified, nothing to encode             I@03:20:52.208
+PASS #6: InlinePass                                               I@03:20:52.209
+Leaving only relevant operators: Agreement, CInit, CInitPrimed, ConstInit, ConstInitPrimed, Next I@03:20:52.209
+PASS #7: PrimingPass                                              I@03:20:52.227
+  > Introducing ConstInitPrimed for ConstInit'                    I@03:20:52.229
+  > Introducing CInitPrimed for CInit'                            I@03:20:52.483
+PASS #8: VCGen                                                    I@03:20:52.487
+  > Producing verification conditions from the invariant Agreement I@03:20:52.488
+  > VCGen produced 1 verification condition(s)                    I@03:20:52.495
+PASS #9: PreprocessingPass                                        I@03:20:52.497
+  > Before preprocessing: unique renaming                         I@03:20:52.497
+ > Applying standard transformations:                             I@03:20:52.506
+  > PrimePropagation                                              I@03:20:52.507
+  > Desugarer                                                     I@03:20:52.510
+  > UniqueRenamer                                                 I@03:20:52.516
+  > Normalizer                                                    I@03:20:52.530
+  > SetMembershipSimplifier                                       I@03:20:52.541
+  > Keramelizer                                                   I@03:20:52.547
+  > After preprocessing: UniqueRenamer                            I@03:20:52.561
+PASS #10: TransitionFinderPass                                    I@03:20:52.593
+  > Found 1 initializing transitions                              I@03:20:52.624
+  > Found 2 transitions                                           I@03:20:52.633
+  > Found constant initializer ConstInit                          I@03:20:52.634
+  > Applying unique renaming                                      I@03:20:52.638
+PASS #11: OptimizationPass                                        I@03:20:52.646
+ > Applying optimizations:                                        I@03:20:52.652
+  > ConstSimplifier                                               I@03:20:52.653
+  > ExprOptimizer                                                 I@03:20:52.663
+  > SetMembershipSimplifier                                       I@03:20:52.672
+  > ConstSimplifier                                               I@03:20:52.674
+PASS #12: AnalysisPass                                            I@03:20:52.682
+ > Marking skolemizable existentials and sets to be expanded...   I@03:20:52.685
+  > Skolemization                                                 I@03:20:52.686
+  > Expansion                                                     I@03:20:52.687
+  > Remove unused let-in defs                                     I@03:20:52.691
+ > Running analyzers...                                           I@03:20:52.697
+  > Introduced expression grades                                  I@03:20:52.702
+PASS #13: BoundedChecker                                          I@03:20:52.702
+State 0: Checking 1 state invariants                              I@03:21:05.996
+State 0: state invariant 0 holds.                                 I@03:21:22.838
+Step 0: picking a transition out of 1 transition(s)               I@03:21:22.892
+The outcome is: NoError                                           I@03:21:23.023
+Checker reports no error up to computation length 0               I@03:21:23.023
+It took me 0 days  0 hours  0 min 32 sec                          I@03:21:23.024
+Total time: 32.406 sec                                            I@03:21:23.024
+EXITCODE: OK

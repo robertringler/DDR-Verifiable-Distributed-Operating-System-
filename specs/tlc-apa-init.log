@@ -1,0 +1,77 @@
+# Usage statistics is OFF. We care about your privacy.
+# If you want to help our project, consider enabling statistics with config --enable-stats=true.
+
+Output directory: /home/user/DDR-Verifiable-Distributed-Operating-System-/specs/_apalache-out/DDRConsensusApa.tla/2026-06-03T03-20-46_15644146696753321248
+# APALACHE version: 0.58.0 | build: 711dce6                       I@03:20:46.938
+Tuning: search.outputTraces=false                                 I@03:20:46.968
+PASS #0: SanyParser                                               I@03:20:47.228
+PASS #1: TypeCheckerSnowcat                                       I@03:20:47.637
+ > Running Snowcat .::.                                           I@03:20:47.638
+ > Your types are purrfect!                                       I@03:20:48.365
+ > All expressions are typed                                      I@03:20:48.365
+PASS #2: ConfigurationPass                                        I@03:20:48.366
+  > Set the initialization predicate to Init                      I@03:20:48.371
+  > Set the transition predicate to Next                          I@03:20:48.371
+  > Set the constant initialization predicate to ConstInit        I@03:20:48.372
+  > Set an invariant to IndInv                                    I@03:20:48.372
+PASS #3: DesugarerPass                                            I@03:20:48.377
+  > Desugaring...                                                 I@03:20:48.377
+PASS #4: InlinePass                                               I@03:20:48.395
+Leaving only relevant operators: ConstInit, ConstInitPrimed, IndInv, Init, InitPrimed, Next I@03:20:48.396
+PASS #5: TemporalPass                                             I@03:20:48.465
+  > Rewriting temporal operators...                               I@03:20:48.465
+  > No temporal property specified, nothing to encode             I@03:20:48.465
+PASS #6: InlinePass                                               I@03:20:48.465
+Leaving only relevant operators: ConstInit, ConstInitPrimed, IndInv, Init, InitPrimed, Next I@03:20:48.465
+PASS #7: PrimingPass                                              I@03:20:48.482
+  > Introducing ConstInitPrimed for ConstInit'                    I@03:20:48.485
+  > Introducing InitPrimed for Init'                              I@03:20:48.721
+PASS #8: VCGen                                                    I@03:20:48.724
+  > Producing verification conditions from the invariant IndInv   I@03:20:48.725
+  > VCGen produced 10 verification condition(s)                   I@03:20:48.733
+PASS #9: PreprocessingPass                                        I@03:20:48.737
+  > Before preprocessing: unique renaming                         I@03:20:48.737
+ > Applying standard transformations:                             I@03:20:48.745
+  > PrimePropagation                                              I@03:20:48.746
+  > Desugarer                                                     I@03:20:48.749
+  > UniqueRenamer                                                 I@03:20:48.755
+  > Normalizer                                                    I@03:20:48.770
+  > SetMembershipSimplifier                                       I@03:20:48.781
+  > Keramelizer                                                   I@03:20:48.788
+  > After preprocessing: UniqueRenamer                            I@03:20:48.805
+PASS #10: TransitionFinderPass                                    I@03:20:48.820
+  > Found 1 initializing transitions                              I@03:20:48.848
+  > Found 2 transitions                                           I@03:20:48.859
+  > Found constant initializer ConstInit                          I@03:20:48.860
+  > Applying unique renaming                                      I@03:20:48.864
+PASS #11: OptimizationPass                                        I@03:20:48.873
+ > Applying optimizations:                                        I@03:20:48.879
+  > ConstSimplifier                                               I@03:20:48.879
+  > ExprOptimizer                                                 I@03:20:48.891
+  > SetMembershipSimplifier                                       I@03:20:48.900
+  > ConstSimplifier                                               I@03:20:48.903
+PASS #12: AnalysisPass                                            I@03:20:48.915
+ > Marking skolemizable existentials and sets to be expanded...   I@03:20:48.918
+  > Skolemization                                                 I@03:20:48.918
+  > Expansion                                                     I@03:20:48.921
+  > Remove unused let-in defs                                     I@03:20:48.937
+ > Running analyzers...                                           I@03:20:48.943
+  > Introduced expression grades                                  I@03:20:48.952
+PASS #13: BoundedChecker                                          I@03:20:48.952
+State 0: Checking 10 state invariants                             I@03:20:49.453
+State 0: state invariant 0 holds.                                 I@03:20:49.455
+State 0: state invariant 1 holds.                                 I@03:20:49.458
+State 0: state invariant 2 holds.                                 I@03:20:49.476
+State 0: state invariant 3 holds.                                 I@03:20:49.489
+State 0: state invariant 4 holds.                                 I@03:20:49.490
+State 0: state invariant 5 holds.                                 I@03:20:49.527
+State 0: state invariant 6 holds.                                 I@03:20:49.539
+State 0: state invariant 7 holds.                                 I@03:20:49.563
+State 0: state invariant 8 holds.                                 I@03:20:49.571
+State 0: state invariant 9 holds.                                 I@03:20:49.590
+Step 0: picking a transition out of 1 transition(s)               I@03:20:49.591
+The outcome is: NoError                                           I@03:20:49.600
+Checker reports no error up to computation length 0               I@03:20:49.601
+It took me 0 days  0 hours  0 min  2 sec                          I@03:20:49.602
+Total time: 2.660 sec                                             I@03:20:49.602
+EXITCODE: OK

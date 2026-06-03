@@ -3,3 +3,4 @@
 /tools/tla2tools.jar
 specs/states/
 *.st
+specs/_apalache-out/
