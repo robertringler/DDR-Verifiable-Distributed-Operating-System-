@@ -21,7 +21,7 @@ adversarial test that **detects a safety violation when the lock is removed.**
 | `ddr-core` | Deterministic state: canonical state root `reduce`, kernel step `K`, invariants | M1 ✅ |
 | `ddr-consensus` | BFT consensus with the lock/unlock rule; deterministic adversarial simulator; safety + liveness tests | M1 ✅ |
 | `ddr-chain` | Multi-height chaining + epoch transitions (validator rotation); cross-epoch No-Fork: anchoring, anti-rollback, quorum-gated hand-off, handoff uniqueness | M3 ✅ |
-| `ddr-exec` | `wasm_ddr` subset validator + deterministic execution kernel `K` (pure-Rust `wasmi`) + bit-perfect replay (tamper-detecting) | M2 ✅ |
+| `ddr-exec` | `wasm_ddr` subset validator + deterministic execution kernel `K` (pure-Rust `wasmi`) + bit-perfect replay; `dag`: DAG-scheduled parallel execution = sequential (Thm 8.2) | M2/M2b ✅ |
 | `ddr-attest` | Recursive attestation accumulator (Merkle Mountain Range): single history commitment + external O(log n) inclusion proofs + tamper evidence | M4 ✅ |
 | `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
 | `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + the `SafeInv` inductive invariant | M5 ✅ |
@@ -54,7 +54,7 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 - ~~**M3** — epoch transitions (validator rotation), cross-epoch No-Fork~~ ✅ **done**.
 - ~~**M4** — recursive attestation accumulator (MMR) + external inclusion proofs~~ ✅ **done**
   (O(log n); O(1) succinct verification is the `SuccinctBackend` SNARK seam, not yet implemented).
-- **M2b** — multi-key world-state + DAG parallel-execution determinism (Thm 8.2).
+- ~~**M2b** — multi-key world-state + DAG parallel-execution determinism (Thm 8.2)~~ ✅ **done**.
 - ~~**M5** — TLA⁺ model + TLC-discharged cross-round safety (n=4,f=1 and n=7,f=2)~~ ✅;
   see [`docs/audit/12-verification-tlc.md`](docs/audit/12-verification-tlc.md).
 - ~~**M5b** — *unbounded* safety: inductive-invariant paper proof for all `n≥3f+1`,

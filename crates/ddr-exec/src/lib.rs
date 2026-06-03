@@ -26,6 +26,8 @@
 use ddr_core::Hash32;
 use wasmi::{Engine, Linker, Module, Store};
 
+pub mod dag;
+
 /// The execution world-state. A single 64-bit register: minimal, but enough to
 /// demonstrate *real computation* whose result the state root commits to
 /// (unlike `ddr-core::reduce`, which commits only to opaque tx bytes).

@@ -122,6 +122,17 @@ fn main() {
     )
     .unwrap();
     println!("  float module rejected by validator: {}", WasmKernel::from_wasm(&float).is_err());
+    // DAG parallel-execution determinism (M2b, Thm 8.2).
+    use ddr_exec::dag::{execute_parallel, execute_sequential, world_root, KeyedTx, World};
+    let ktxs = vec![
+        KeyedTx { reads: vec![1], write: 2, delta: 5 },
+        KeyedTx { reads: vec![3], write: 4, delta: 7 }, // independent of #0
+        KeyedTx { reads: vec![2], write: 5, delta: 1 }, // depends on #0
+    ];
+    let seq = world_root(&execute_sequential(&World::new(), &ktxs));
+    let par = world_root(&execute_parallel(&World::new(), &ktxs));
+    println!("  DAG parallel result == sequential result: {}", seq == par);
+
     println!("\nConclusion: execution is deterministic, replay is bit-perfect, and the wasm_ddr gate holds.");
 
     // 6. Recursive attestation (M4): commit a history, verify externally.
