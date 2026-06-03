@@ -1,6 +1,8 @@
 /target
 **/*.rs.bk
 /tools/tla2tools.jar
+/tools/apalache/
+specs/unb-logs/
 specs/states/
 *.st
 specs/_apalache-out/

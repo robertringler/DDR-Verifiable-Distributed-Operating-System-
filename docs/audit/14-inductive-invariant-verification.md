@@ -75,15 +75,20 @@ IndInv ==
      `MaxRound`. A *formal* all-rounds result needs an `Apalache`-`Gen` encoding
      with size-bounded (rather than round-bounded) vote sets, or a meta-argument
      for round-homogeneity discharged in TLAPS — a stretch tracked as M5c+.
+     **→ Now done:** M5c+ ([`15-unbounded-rounds-verification.md`](15-unbounded-rounds-verification.md))
+     re-discharges the inductive step with round numbers as **free integers** (no
+     `MaxRound`), via exactly this `Gen`-bounded-cardinality encoding plus the
+     round-homogeneity argument. The round-magnitude gap is closed.
   2. **Parametric `n`.** The proof is for `n=4`. All-`n ≥ 3f+1` requires TLAPS
      (a parameterized proof), which the paper argument (M5b §"why `n ≥ 3f+1`")
      supplies by hand but is not yet mechanized.
 
 So the ladder is now: TLC reachability (M5) → full-invariant reachability at two
 configs (M5c pt.1) → **machine-checked inductive invariant at n=4 (M5c)** →
-[unbounded rounds] → [parametric `n`, TLAPS]. The "by hand" caveat from M5b is
-removed for the inductive step itself at a concrete configuration, and the hand
-proof is now known to be missing nothing (modulo the parametric generalization).
+**free-integer/unbounded rounds (M5c+, done — doc 15)** → [parametric `n`, TLAPS].
+The "by hand" caveat from M5b is removed for the inductive step itself at a
+concrete configuration, and the hand proof is now known to be missing nothing
+(modulo the parametric generalization).
 
 ## Reproduce
 

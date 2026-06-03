@@ -60,6 +60,10 @@ poset), dual-confused (colimit vs. terminal object), or a non-sequitur
 | 10 | [`09-execution-prioritization.md`](09-execution-prioritization.md) | Priority matrix; the single best 7/30/90-day action |
 | + | [`10-ddr-computational-substrate-audit.md`](10-ddr-computational-substrate-audit.md) | **Addendum** (2026-06-01): audit of the now-supplied DDR computational substrate (Vols I–II) and Volume III; resolves the refinement tension |
 | + | [`11-ciir-monograph-reaudit.md`](11-ciir-monograph-reaudit.md) | **Second-reviewer re-audit** (2026-06-01): the CIIR monograph itself, read as primary source — does it construct `d_sem`, `κ<1`, `Π_C`? |
+| V | [`12-verification-tlc.md`](12-verification-tlc.md) | **DDR build verification trail #1**: TLA⁺ model of the lock-rule consensus, exhaustively discharged by TLC (n=4,f=1 and n=7,f=2; counterexample without the lock) |
+| V | [`13-unbounded-safety-proof.md`](13-unbounded-safety-proof.md) | **#2**: unbounded-rounds, all-`n≥3f+1` *paper* proof of cross-round Agreement (inductive invariant `SafeInv`) |
+| V | [`14-inductive-invariant-verification.md`](14-inductive-invariant-verification.md) | **#3**: Apalache machine-checks the full inductive invariant at n=4 (and *finds* the missing `LockComplete` conjunct); round-robustness corroborated at MaxRound∈{3,6} |
+| V | [`15-unbounded-rounds-verification.md`](15-unbounded-rounds-verification.md) | **#4**: Apalache discharges the inductive step with round numbers as **free integers** (no MaxRound) — closing the round-magnitude gap left by #3 |
 
 > **Fourth finding (added 2026-06-01, after the CIIR monograph was located and
 > read as primary source — see [`11-ciir-monograph-reaudit.md`](11-ciir-monograph-reaudit.md)):**

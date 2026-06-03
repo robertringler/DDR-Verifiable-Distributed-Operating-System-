@@ -1,0 +1,89 @@
+# Usage statistics is OFF. We care about your privacy.
+# If you want to help our project, consider enabling statistics with config --enable-stats=true.
+
+Output directory: /home/user/DDR-Verifiable-Distributed-Operating-System-/specs/_apalache-out/DDRConsensusUnbounded.tla/2026-06-03T21-53-11_1443097115754221867
+# APALACHE version: 0.58.0 | build: 711dce6                       I@21:53:11.506
+Tuning: search.outputTraces=false                                 I@21:53:11.532
+PASS #0: SanyParser                                               I@21:53:11.753
+PASS #1: TypeCheckerSnowcat                                       I@21:53:12.154
+ > Running Snowcat .::.                                           I@21:53:12.154
+ > Your types are purrfect!                                       I@21:53:12.997
+ > All expressions are typed                                      I@21:53:12.997
+PASS #2: ConfigurationPass                                        I@21:53:12.998
+  > Set the initialization predicate to Init                      I@21:53:13.004
+  > Set the transition predicate to Next                          I@21:53:13.005
+  > Set the constant initialization predicate to ConstInit        I@21:53:13.005
+  > Set an invariant to IndInv                                    I@21:53:13.005
+PASS #3: DesugarerPass                                            I@21:53:13.011
+  > Desugaring...                                                 I@21:53:13.011
+PASS #4: InlinePass                                               I@21:53:13.027
+Leaving only relevant operators: ConstInit, ConstInitPrimed, IndInv, Init, InitPrimed, Next I@21:53:13.027
+PASS #5: TemporalPass                                             I@21:53:13.107
+  > Rewriting temporal operators...                               I@21:53:13.107
+  > No temporal property specified, nothing to encode             I@21:53:13.107
+PASS #6: InlinePass                                               I@21:53:13.107
+Leaving only relevant operators: ConstInit, ConstInitPrimed, IndInv, Init, InitPrimed, Next I@21:53:13.107
+PASS #7: PrimingPass                                              I@21:53:13.120
+  > Introducing ConstInitPrimed for ConstInit'                    I@21:53:13.122
+  > Introducing InitPrimed for Init'                              I@21:53:13.331
+PASS #8: VCGen                                                    I@21:53:13.332
+  > Producing verification conditions from the invariant IndInv   I@21:53:13.333
+  > VCGen produced 22 verification condition(s)                   I@21:53:13.340
+PASS #9: PreprocessingPass                                        I@21:53:13.343
+  > Before preprocessing: unique renaming                         I@21:53:13.343
+ > Applying standard transformations:                             I@21:53:13.350
+  > PrimePropagation                                              I@21:53:13.351
+  > Desugarer                                                     I@21:53:13.354
+  > UniqueRenamer                                                 I@21:53:13.359
+  > Normalizer                                                    I@21:53:13.372
+  > SetMembershipSimplifier                                       I@21:53:13.380
+  > Keramelizer                                                   I@21:53:13.387
+  > After preprocessing: UniqueRenamer                            I@21:53:13.404
+PASS #10: TransitionFinderPass                                    I@21:53:13.418
+  > Found 1 initializing transitions                              I@21:53:13.462
+  > Found 1 transitions                                           I@21:53:13.468
+  > Found constant initializer ConstInit                          I@21:53:13.469
+  > Applying unique renaming                                      I@21:53:13.473
+PASS #11: OptimizationPass                                        I@21:53:13.480
+ > Applying optimizations:                                        I@21:53:13.485
+  > ConstSimplifier                                               I@21:53:13.485
+  > ExprOptimizer                                                 I@21:53:13.500
+  > SetMembershipSimplifier                                       I@21:53:13.510
+  > ConstSimplifier                                               I@21:53:13.513
+PASS #12: AnalysisPass                                            I@21:53:13.525
+ > Marking skolemizable existentials and sets to be expanded...   I@21:53:13.527
+  > Skolemization                                                 I@21:53:13.527
+  > Expansion                                                     I@21:53:13.528
+  > Remove unused let-in defs                                     I@21:53:13.533
+ > Running analyzers...                                           I@21:53:13.539
+  > Introduced expression grades                                  I@21:53:13.544
+PASS #13: BoundedChecker                                          I@21:53:13.545
+State 0: Checking 22 state invariants                             I@21:53:14.031
+State 0: state invariant 0 holds.                                 I@21:53:14.034
+State 0: state invariant 1 holds.                                 I@21:53:14.046
+State 0: state invariant 2 holds.                                 I@21:53:14.053
+State 0: state invariant 3 holds.                                 I@21:53:14.092
+State 0: state invariant 4 holds.                                 I@21:53:14.093
+State 0: state invariant 5 holds.                                 I@21:53:14.094
+State 0: state invariant 6 holds.                                 I@21:53:14.106
+State 0: state invariant 7 holds.                                 I@21:53:14.115
+State 0: state invariant 8 holds.                                 I@21:53:14.120
+State 0: state invariant 9 holds.                                 I@21:53:14.171
+State 0: state invariant 10 holds.                                I@21:53:14.194
+State 0: state invariant 11 holds.                                I@21:53:14.202
+State 0: state invariant 12 holds.                                I@21:53:14.203
+State 0: state invariant 13 holds.                                I@21:53:14.208
+State 0: state invariant 14 holds.                                I@21:53:14.235
+State 0: state invariant 15 holds.                                I@21:53:14.236
+State 0: state invariant 16 holds.                                I@21:53:14.237
+State 0: state invariant 17 holds.                                I@21:53:14.237
+State 0: state invariant 18 holds.                                I@21:53:14.251
+State 0: state invariant 19 holds.                                I@21:53:14.269
+State 0: state invariant 20 holds.                                I@21:53:14.270
+State 0: state invariant 21 holds.                                I@21:53:14.271
+Step 0: picking a transition out of 1 transition(s)               I@21:53:14.272
+The outcome is: NoError                                           I@21:53:14.281
+Checker reports no error up to computation length 0               I@21:53:14.281
+It took me 0 days  0 hours  0 min  2 sec                          I@21:53:14.282
+Total time: 2.773 sec                                             I@21:53:14.282
+EXITCODE: OK

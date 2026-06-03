@@ -25,7 +25,7 @@ adversarial test that **detects a safety violation when the lock is removed.**
 | `ddr-attest` | Recursive attestation accumulator (Merkle Mountain Range): single history commitment + external O(log n) inclusion proofs + tamper evidence | M4 ✅ |
 | `ddr` | Umbrella facade re-exporting the layers + the **end-to-end lifecycle test** (consensus → execution → chain/epochs → attestation, externally verified, replay-deterministic, tamper-evident) | ✅ |
 | `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
-| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + the `SafeInv` inductive invariant | M5 ✅ |
+| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + a **machine-checked inductive-invariant proof in Apalache**, at fixed `MaxRound` (M5c) and over **free-integer / unbounded rounds** (M5c+) | M5/M5c/M5c+ ✅ |
 
 ## Build & test
 
@@ -64,13 +64,20 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 - ~~**M5c** — mechanize the inductive step (Apalache)~~ ✅ **done** — Apalache discharges
   `Init⇒IndInv`, `IndInv∧Next⇒IndInv'`, `IndInv⇒Agreement` for n=4 (and *found* a
   missing conjunct, `LockComplete`). See [`docs/audit/14-inductive-invariant-verification.md`](docs/audit/14-inductive-invariant-verification.md).
-- **M5c+** — lift the inductive proof to *unbounded rounds* (Apalache `Gen`) and
-  *parametric n* (TLAPS).
+- ~~**M5c+** — lift the inductive proof to *unbounded rounds*~~ ✅ **done** — Apalache
+  discharges all three obligations with round numbers as **free integers** (no
+  `MaxRound`; `Gen`-bounded vote configuration), closing the round-magnitude gap
+  left by M5c. See [`docs/audit/15-unbounded-rounds-verification.md`](docs/audit/15-unbounded-rounds-verification.md).
+- **M5c++** — *parametric n* (TLAPS): a machine-checked proof for all `n ≥ 3f+1`,
+  not just `n=4`. The paper argument (M5b) supplies this by hand; mechanizing it
+  is the last remaining verification gap.
 
 ## Verify the safety theorem
 
 ```bash
-cd specs && ./check.sh   # TLC: lock ON ⇒ no error (exhaustive); lock OFF ⇒ counterexample
+cd specs && ./check.sh             # TLC: lock ON ⇒ no error (exhaustive); lock OFF ⇒ counterexample
+cd specs && ./check-induction.sh   # Apalache: inductive-invariant proof at fixed MaxRound (M5c)
+cd specs && ./check-unbounded.sh   # Apalache: inductive step over FREE-INTEGER rounds (M5c+)
 ```
 
 See `docs/audit/05-poc-system.md` for the CIIR/semantic PoC — deliberately
