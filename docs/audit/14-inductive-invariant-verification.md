@@ -63,11 +63,18 @@ IndInv ==
   step is checked from arbitrary `IndInv` states, the real meaning of
   "inductive"). The proof's invariant is now known to be *correct and complete*
   (the `LockComplete` gap is closed).
+- **Round-robustness (corroboration).** The inductive step was re-discharged at
+  `MaxRound = 6` (`ConstInit6`, `specs/tlc-apa-step-r6.log`) — **also no error.**
+  Since `DoRound` is *round-homogeneous* (no clause depends on the magnitude of
+  the round number, only on the guard `r ≤ MaxRound`), passing the inductive step
+  from arbitrary states at both `MaxRound = 3` and `MaxRound = 6` is strong
+  evidence that inductiveness is independent of the round bound. This is
+  corroboration, not a formal unbounded proof — see next.
 - **Not yet covered:**
-  1. **Unbounded rounds.** The Apalache config fixes `MaxRound = 3`; the step is
-     checked for rounds `0..3`. Lifting to all rounds needs an `Apalache`-`Gen`
-     encoding with size-bounded (rather than round-bounded) vote sets — a
-     stretch tracked as M5c-unbounded.
+  1. **Unbounded rounds (formally).** Each Apalache config fixes a finite
+     `MaxRound`. A *formal* all-rounds result needs an `Apalache`-`Gen` encoding
+     with size-bounded (rather than round-bounded) vote sets, or a meta-argument
+     for round-homogeneity discharged in TLAPS — a stretch tracked as M5c+.
   2. **Parametric `n`.** The proof is for `n=4`. All-`n ≥ 3f+1` requires TLAPS
      (a parameterized proof), which the paper argument (M5b §"why `n ≥ 3f+1`")
      supplies by hand but is not yet mechanized.
