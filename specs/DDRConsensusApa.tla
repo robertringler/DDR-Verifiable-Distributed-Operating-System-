@@ -49,6 +49,13 @@ ConstInit ==
   /\ MaxRound = 3
   /\ q = 3
 
+ConstInit6 ==
+  /\ Validators = {"v1", "v2", "v3", "v4"}
+  /\ Faulty = {"v4"}
+  /\ Values = {"a", "b"}
+  /\ MaxRound = 6
+  /\ q = 3
+
 Correct == Validators \ Faulty
 Nil == "nil"
 

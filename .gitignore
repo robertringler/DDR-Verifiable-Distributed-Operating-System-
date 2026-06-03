@@ -4,3 +4,4 @@
 specs/states/
 *.st
 specs/_apalache-out/
+specs/tlc-apa-step-r6.log
