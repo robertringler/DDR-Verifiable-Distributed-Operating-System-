@@ -11,6 +11,7 @@ use ddr_chain::{Chain, HandoffQc, ValidatorSet};
 use ddr_consensus::{run, search_for_violation, Config};
 use ddr_core::{reduce, StateRoot, Tx};
 use ddr_exec::{verify_trace, ExecTx, WasmKernel};
+use ddr_attest::{verify_inclusion, Mmr};
 
 fn main() {
     println!("== DDR Milestone 1 ==\n");
@@ -122,4 +123,21 @@ fn main() {
     .unwrap();
     println!("  float module rejected by validator: {}", WasmKernel::from_wasm(&float).is_err());
     println!("\nConclusion: execution is deterministic, replay is bit-perfect, and the wasm_ddr gate holds.");
+
+    // 6. Recursive attestation (M4): commit a history, verify externally.
+    println!("\n[attest] append-only attestation accumulator (MMR):");
+    let mut mmr = Mmr::new();
+    for e in 0..7u64 {
+        mmr.append(StateRoot::of(&[b"civ-root", &e.to_le_bytes()]));
+    }
+    let commitment = mmr.root();
+    println!("  committed {} epoch attestations -> root {:?}", mmr.len(), commitment);
+    // An external party, holding only the root, verifies epoch 3 is in history.
+    let proof = mmr.prove(3).unwrap();
+    let epoch3 = StateRoot::of(&[b"civ-root", &3u64.to_le_bytes()]);
+    println!("  external O(log n) inclusion proof for epoch 3 verifies: {}", verify_inclusion(commitment, epoch3, &proof));
+    // A forged attestation at that position is rejected.
+    let forged = StateRoot::of(&[b"civ-root", &999u64.to_le_bytes()]);
+    println!("  forged attestation rejected: {}", !verify_inclusion(commitment, forged, &proof));
+    println!("\nConclusion: any party can verify history membership from the root alone — O(log n) now, O(1) with the SNARK backend.");
 }

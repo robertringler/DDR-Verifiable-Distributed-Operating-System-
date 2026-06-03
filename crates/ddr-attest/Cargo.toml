@@ -1,0 +1,8 @@
+[package]
+name = "ddr-attest"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ddr-core = { path = "../ddr-core" }
