@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "build": "npm run build --prefix server && npm run build --prefix client && cp -r client/dist server/dist/public",
+    "build": "npm run build --prefix client",
     "start": "node server/dist/index.js"
   },
   "devDependencies": {
+    "@vercel/node": "^3.0.21",
     "concurrently": "^8.2.2"
   }
 }
