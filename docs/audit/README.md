@@ -64,6 +64,7 @@ poset), dual-confused (colimit vs. terminal object), or a non-sequitur
 | V | [`13-unbounded-safety-proof.md`](13-unbounded-safety-proof.md) | **#2**: unbounded-rounds, all-`n≥3f+1` *paper* proof of cross-round Agreement (inductive invariant `SafeInv`) |
 | V | [`14-inductive-invariant-verification.md`](14-inductive-invariant-verification.md) | **#3**: Apalache machine-checks the full inductive invariant at n=4 (and *finds* the missing `LockComplete` conjunct); round-robustness corroborated at MaxRound∈{3,6} |
 | V | [`15-unbounded-rounds-verification.md`](15-unbounded-rounds-verification.md) | **#4**: Apalache discharges the inductive step with round numbers as **free integers** (no MaxRound) — closing the round-magnitude gap left by #3 |
+| V | [`16-parametric-safety-tlaps.md`](16-parametric-safety-tlaps.md) | **#5**: TLAPS proof structure for all `n=3f+1` (parametric `f`) — derives `ActiveHVLower` counting lemma, formalizes all 10 `IndInv` conjuncts; pending final TLAPS machine-run |
 
 > **Fourth finding (added 2026-06-01, after the CIIR monograph was located and
 > read as primary source — see [`11-ciir-monograph-reaudit.md`](11-ciir-monograph-reaudit.md)):**
