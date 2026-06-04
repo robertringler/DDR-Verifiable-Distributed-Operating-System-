@@ -8,8 +8,10 @@ import { useFlipRadarStore } from '../../store/flipradarStore'
 
 export default function DealModal({ listing, onClose }: { listing: Listing; onClose: () => void }) {
   const [imgIdx, setImgIdx] = useState(0)
-  const { watchlist, addToWatchlist, removeFromWatchlist } = useFlipRadarStore()
+  const [portfolioPrice, setPortfolioPrice] = useState(String(listing.buyPrice))
+  const { watchlist, addToWatchlist, removeFromWatchlist, portfolio, addToPortfolio } = useFlipRadarStore()
   const inWatch = watchlist.some(w => w.id === listing.id)
+  const inPortfolio = portfolio.some(e => e.listing.id === listing.id)
 
   useEffect(() => {
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -37,12 +39,26 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
           borderRadius: '10px',
           width: '100%',
           maxWidth: '720px',
-          maxHeight: '85vh',
+          maxHeight: '90vh',
           overflow: 'auto',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          position: 'relative'
         }}
       >
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '10px', right: '12px', zIndex: 10,
+            width: '24px', height: '24px', borderRadius: '50%',
+            background: 'var(--surface2)', border: '1px solid var(--border)',
+            color: 'var(--text)', fontSize: '14px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          ×
+        </button>
+
         <div style={{ display: 'flex', gap: '0', minHeight: '280px' }}>
           <div style={{ width: '320px', flexShrink: 0, background: 'var(--surface2)', position: 'relative' }}>
             {listing.images[imgIdx] ? (
@@ -66,9 +82,9 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
               <Badge cls={listing.classification} />
               <SourceBadge source={listing.source} />
             </div>
-            <h2 style={{ fontSize: '14px', color: 'var(--text-bright)', lineHeight: 1.4 }}>{listing.title}</h2>
+            <h2 style={{ fontSize: '13px', color: 'var(--text-bright)', lineHeight: 1.4, paddingRight: '30px' }}>{listing.title}</h2>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               {[
                 { label: 'Buy Price', value: formatCurrency(listing.buyPrice), color: 'var(--text-bright)' },
                 { label: 'Est. Resale', value: formatCurrency(listing.estResalePrice), color: 'var(--green)' },
@@ -82,18 +98,19 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
               ))}
             </div>
 
-            <div style={{ fontSize: '11px', color: 'var(--text)', display: 'flex', gap: '12px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text)', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <span>Condition: {listing.condition}</span>
               <span>Location: {listing.location}</span>
+              <span>Category: {listing.category}</span>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: 'auto' }}>
               <a
                 href={listing.listingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  flex: 1, padding: '8px', textAlign: 'center',
+                  flex: 1, padding: '7px', textAlign: 'center',
                   background: 'var(--green)', color: 'var(--bg)',
                   borderRadius: '5px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em'
                 }}
@@ -103,7 +120,7 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
               <button
                 onClick={() => inWatch ? removeFromWatchlist(listing.id) : addToWatchlist(listing)}
                 style={{
-                  padding: '8px 16px',
+                  padding: '7px 12px',
                   background: inWatch ? 'rgba(16,185,129,0.1)' : 'var(--surface2)',
                   border: `1px solid ${inWatch ? 'var(--green)' : 'var(--border)'}`,
                   color: inWatch ? 'var(--green)' : 'var(--text)',
@@ -117,9 +134,9 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
         </div>
 
         {compData.length > 0 && (
-          <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)' }}>
             <div style={{ fontSize: '10px', color: 'var(--text)', letterSpacing: '0.08em', marginBottom: '10px' }}>
-              SOLD COMPS ({compData.length} recent)
+              SOLD COMPS ({compData.length} recent eBay sales)
             </div>
             <ResponsiveContainer width="100%" height={80}>
               <AreaChart data={compData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -133,7 +150,7 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
                 <YAxis hide domain={['auto', 'auto']} />
                 <Tooltip
                   contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border)', fontSize: '10px' }}
-                  formatter={(v: number) => [formatCurrency(v), 'Sold']}
+                  formatter={(v: number) => [formatCurrency(v), 'Sold Price']}
                 />
                 <Area type="monotone" dataKey="price" stroke="#10B981" strokeWidth={1.5} fill="url(#compGrad)" dot={false} />
               </AreaChart>
@@ -141,13 +158,36 @@ export default function DealModal({ listing, onClose }: { listing: Listing; onCl
           </div>
         )}
 
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            display: 'none'
-          }}
-        />
+        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '10px', color: 'var(--text)' }}>I paid</span>
+          <input
+            type="number"
+            value={portfolioPrice}
+            onChange={e => setPortfolioPrice(e.target.value)}
+            style={{
+              width: '90px', padding: '5px 8px',
+              background: 'var(--surface2)', border: '1px solid var(--border)',
+              borderRadius: '4px', color: 'var(--text-bright)', fontSize: '12px',
+              fontFamily: 'var(--mono)'
+            }}
+          />
+          <button
+            onClick={() => {
+              const price = parseFloat(portfolioPrice)
+              if (price > 0 && !inPortfolio) addToPortfolio(listing, price)
+            }}
+            disabled={inPortfolio}
+            style={{
+              padding: '5px 12px', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em',
+              background: inPortfolio ? 'rgba(16,185,129,0.1)' : 'var(--surface2)',
+              border: `1px solid ${inPortfolio ? 'var(--green)' : 'var(--border)'}`,
+              color: inPortfolio ? 'var(--green)' : 'var(--text)',
+              borderRadius: '4px'
+            }}
+          >
+            {inPortfolio ? '✓ In Portfolio' : 'Add to Portfolio'}
+          </button>
+        </div>
       </div>
     </div>
   )
