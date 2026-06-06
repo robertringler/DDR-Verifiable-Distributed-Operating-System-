@@ -1,45 +1,28 @@
 #!/usr/bin/env bash
-# Parametric safety proof (all n=3f+1) for DDR consensus — TLAPS proof structure.
-# Run with the TLA+ Proof System (tlaps).
+# Parametric safety proof (all n=3f+1) for DDR consensus — TLAPS (tlapm).
+# Discharges, machine-checked, the parametric quorum-intersection counting core
+# plus Init => IndInv; the protocol-level inductive step is structured with
+# OMITTED leaves (see docs/audit/16-parametric-safety-tlaps.md).
 #
-# Status: proof structure complete; requires the `tlaps` tool to machine-check.
-# See docs/audit/16-parametric-safety-tlaps.md.
-#
-# Install TLAPS:
-#   https://tla.msr-inria.inria.fr/tlaps/content/Download/Binaries.html
-#   (ships with the TLA+ Toolbox; standalone Linux binary also available)
-#
-# Usage (once tlaps is installed):
-#   cd specs
-#   ./check-parametric.sh       # type-check + attempt proof
-set -euo pipefail
+# Machine-checked (143 obligations, 0 failed):
+#   LEMMA CorrectCard      -- |Correct| = 2f+1                      (parametric f)
+#   LEMMA QuorumIntersect  -- two (f+1)-subsets of Correct intersect (FS_MajoritiesIntersect)
+#   LEMMA ActiveHVLower    -- |Active cap HV| + |Active cap Faulty| >= f+1  (the counting core)
+#   THEOREM Init_IndInv    -- Init => IndInv
+#   THEOREM IndInv_Agreement / IndInv_Step -- proof structure; 14 OMITTED protocol leaves
+set -uo pipefail
 cd "$(dirname "$0")"
 M=DDRConsensusTLAPS.tla
 
-if ! command -v tlaps &>/dev/null; then
-  echo "TLAPS not found. Install from:"
-  echo "  https://tla.msr-inria.inria.fr/tlaps/content/Download/Binaries.html"
-  echo ""
-  echo "Proof structure summary (from $M):"
-  echo "  THEOREM Init_IndInv      -- Init => IndInv         (trivial; all vars = empty/FALSE)"
-  echo "  THEOREM IndInv_Agreement -- IndInv => Agreement    (SafeInv + DecidedJustified)"
-  echo "  THEOREM IndInv_Step      -- IndInv /\ Next => IndInv'  (key: case <1>9 SafeInv')"
-  echo ""
-  echo "The counting argument for SafeInv' (case B, the hard case):"
-  echo "  k + t >= f+1  (ActiveHVLower lemma)"
-  echo "  max W-votes = f + (q-t-k) <= f + (q-t-(f+1-t)) = q-1 < q"
-  echo "  => no conflicting prevote polka"
+TLAPM="$(command -v tlapm || true)"
+[ -z "$TLAPM" ] && [ -x /opt/tlaps/bin/tlapm ] && TLAPM=/opt/tlaps/bin/tlapm
+if [ -z "$TLAPM" ]; then
+  echo "tlapm not found. Install with: ./fetch-tlaps.sh   (then add /opt/tlaps/bin to PATH)"
   exit 1
 fi
 
-echo "== TLAPS typecheck =="
-tlaps --toolbox DDRConsensusTLAPS.tla
-
-echo "== Obligation (1): Init => IndInv =="
-tlaps --toolbox --theorem Init_IndInv DDRConsensusTLAPS.tla
-
-echo "== Obligation (2): IndInv => Agreement =="
-tlaps --toolbox --theorem IndInv_Agreement DDRConsensusTLAPS.tla
-
-echo "== Obligation (3): IndInv /\ Next => IndInv' (parametric n) =="
-tlaps --toolbox --theorem IndInv_Step DDRConsensusTLAPS.tla
+echo "== TLAPS version =="; "$TLAPM" --version
+echo "== proof summary (obligations + omitted leaves) =="
+"$TLAPM" --summary $M 2>&1 | grep -A4 'summary of module "DDRConsensusTLAPS"' | grep -vE "PATH=|not found"
+echo "== verify (all non-omitted obligations) =="
+"$TLAPM" --toolbox 0 0 --cleanfp $M 2>&1 | grep -E "All [0-9]+ obligations proved|obligations failed" | tail -1

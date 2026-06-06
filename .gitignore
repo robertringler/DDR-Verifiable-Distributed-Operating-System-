@@ -2,6 +2,8 @@
 **/*.rs.bk
 /tools/tla2tools.jar
 /tools/apalache/
+/opt/tlaps/
+specs/.tlacache/
 specs/unb-logs/
 specs/states/
 *.st

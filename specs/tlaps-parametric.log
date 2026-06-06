@@ -1,0 +1,34 @@
+# TLAPS proof run — DDRConsensusTLAPS.tla (parametric n=3f+1)
+# tlapm 1.5.0, Z3 4.8.9, Zenon 0.8.4, Isabelle2011-1
+# date: 2026-06-06T22:52Z
+
+== full-module summary ==
+---- summary of module "DDRConsensusTLAPS" ----
+  obligations_count = 143
+  omitted_proofs_count = 14
+  ---- incomplete proof of theorem at line 360, character 1 ----
+    omitted_proofs_count = 1
+    omitted_proof_1 at line 380, characters 7-13
+  ====
+  ---- incomplete proof of theorem at line 405, character 1 ----
+    omitted_proofs_count = 13
+    omitted_proof_2 at line 417, characters 5-11
+    omitted_proof_3 at line 420, characters 5-11
+    omitted_proof_4 at line 423, characters 5-11
+    omitted_proof_5 at line 427, characters 5-11
+    omitted_proof_6 at line 431, characters 5-11
+    omitted_proof_7 at line 435, characters 5-11
+    omitted_proof_8 at line 438, characters 5-11
+    omitted_proof_9 at line 442, characters 5-11
+    omitted_proof_10 at line 455, characters 7-13
+    omitted_proof_11 at line 467, characters 7-13
+    omitted_proof_12 at line 472, characters 7-13
+    omitted_proof_13 at line 477, characters 7-13
+    omitted_proof_14 at line 481, characters 5-11
+  ====
+====
+
+== verification ==
+[INFO]: All 143 obligations proved.
+RESULT: 143 obligations, 0 failed, 14 OMITTED protocol leaves (Agreement x1, Step x13)
+Machine-checked: CorrectCard, QuorumIntersect, ActiveHVLower, Init_IndInv.

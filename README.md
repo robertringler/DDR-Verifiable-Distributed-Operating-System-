@@ -25,7 +25,7 @@ adversarial test that **detects a safety violation when the lock is removed.**
 | `ddr-attest` | Recursive attestation accumulator (Merkle Mountain Range): single history commitment + external O(log n) inclusion proofs + tamper evidence | M4 ✅ |
 | `ddr` | Umbrella facade re-exporting the layers + the **end-to-end lifecycle test** (consensus → execution → chain/epochs → attestation, externally verified, replay-deterministic, tamper-evident) | ✅ |
 | `node` | Runnable demo: cluster + "lock is load-bearing" experiment + multi-epoch rotation | M1/M3 ✅ |
-| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + **machine-checked inductive-invariant proof in Apalache**, at fixed `MaxRound` (M5c) and over **free-integer / unbounded rounds** (M5c+) + **parametric TLAPS proof structure** (all `n=3f+1`, M5c++) | M5/M5c/M5c+/M5c++ ✅ |
+| `specs/` | TLA⁺ model of the lock-rule consensus, **discharged by TLC** (exhaustive at `n=4,f=1` and `n=7,f=2`; counterexample without the lock) + **machine-checked inductive-invariant proof in Apalache**, at fixed `MaxRound` (M5c) and over **free-integer / unbounded rounds** (M5c+) + **TLAPS-machine-checked parametric `n=3f+1` quorum-intersection core** (M5c++) | M5/M5c/M5c+/M5c++ ✅ |
 
 ## Build & test
 
@@ -68,12 +68,16 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
   discharges all three obligations with round numbers as **free integers** (no
   `MaxRound`; `Gen`-bounded vote configuration), closing the round-magnitude gap
   left by M5c. See [`docs/audit/15-unbounded-rounds-verification.md`](docs/audit/15-unbounded-rounds-verification.md).
-- ~~**M5c++** — *parametric n=3f+1* (TLAPS proof structure)~~ ✅ **structure complete** —
-  `DDRConsensusTLAPS.tla` formalizes all three obligations with abstract `(Validators, f, q)`
-  constants; derives the `ActiveHVLower` counting lemma (the core of `SafeInv'`) and writes
-  every `IndInv` conjunct proof in TLAPS syntax. Pending: install `tlaps` and run
-  `specs/check-parametric.sh` to convert from *proof structure* to *machine-checked*.
-  See [`docs/audit/16-parametric-safety-tlaps.md`](docs/audit/16-parametric-safety-tlaps.md).
+- ~~**M5c++** — *parametric n=3f+1* (TLAPS)~~ ✅ **counting core machine-checked** —
+  `DDRConsensusTLAPS.tla` is parametric in `f` (abstract `Validators/Faulty/Values`).
+  TLAPS (`tlapm` 1.5.0 + Z3) discharges **143 obligations, 0 failed**: the `n=3f+1`
+  quorum-intersection arithmetic (`CorrectCard`, `QuorumIntersect`, and the new
+  `ActiveHVLower` counting lemma — the load-bearing step of M5b's safety argument)
+  and `Init ⇒ IndInv` are **fully machine-checked**; the protocol-level inductive step
+  is a complete proof structure with 14 `OMITTED` glue leaves. See
+  [`docs/audit/16-parametric-safety-tlaps.md`](docs/audit/16-parametric-safety-tlaps.md).
+- **M5c++ (remaining)** — discharge the 14 `OMITTED` protocol leaves (unfold `DoRound`
+  and the precommit-polka⇒prevote-polka bridge) to retire the last "by hand" glue.
 
 ## Verify the safety theorem
 
@@ -81,7 +85,7 @@ cargo run -p node   # demo: runs a cluster, then shows the lock keystone experim
 cd specs && ./check.sh             # TLC: lock ON ⇒ no error (exhaustive); lock OFF ⇒ counterexample
 cd specs && ./check-induction.sh   # Apalache: inductive-invariant proof at fixed MaxRound (M5c)
 cd specs && ./check-unbounded.sh   # Apalache: inductive step over FREE-INTEGER rounds (M5c+)
-cd specs && ./check-parametric.sh  # TLAPS: parametric n=3f+1 proof structure (M5c++; requires tlaps)
+cd specs && ./fetch-tlaps.sh && ./check-parametric.sh  # TLAPS: parametric n=3f+1 counting core, 143 obligations 0 failed (M5c++)
 ```
 
 See `docs/audit/05-poc-system.md` for the CIIR/semantic PoC — deliberately

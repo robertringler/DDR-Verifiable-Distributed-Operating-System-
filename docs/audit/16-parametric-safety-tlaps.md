@@ -1,19 +1,34 @@
-# M5c++ — Parametric safety proof (all n=3f+1, TLAPS proof structure)
+# M5c++ — Parametric safety proof (all n=3f+1, TLAPS)
 
-> **Result:** a complete, structured proof of DDR consensus safety for **all
-> `n = 3f+1`** configurations — parametric in `f` — is given in TLAPS
-> (TLA+ Proof System) syntax. The proof formalizes the M5b paper argument
-> (unbounded rounds, all `n≥3f+1`, inductive invariant `IndInv`) with
-> machine-checkable proof obligations for each of the three standard steps.
+> **Result:** the `n = 3f+1` quorum-intersection arithmetic at the heart of DDR
+> consensus safety — **parametric in `f`**, not fixed to `n=4` — is now
+> **machine-checked by TLAPS** (the TLA+ Proof System). This formalizes the M5b
+> paper argument's load-bearing counting step (`ActiveHVLower`) and discharges
+> `Init ⇒ IndInv`; the protocol-level inductive step is given as a complete TLAPS
+> proof structure with its remaining glue marked `OMITTED`.
 >
-> **Status:** proof structure complete and mathematically verified.
-> Machine-checking requires the `tlaps` tool (not installed in this
-> environment). The key counting argument — `ActiveHVLower`, the lemma that
-> bounds conflicting-polka votes to `≤ q−1` — is fully derived, not merely
-> asserted.
+> **Status (machine-checked):** run with `tlapm` 1.5.0 (Z3 4.8.9 / Zenon /
+> Isabelle) — **143 obligations, 0 failed**, 14 `OMITTED` leaves. The
+> parametric **quorum-intersection counting core** and `Init ⇒ IndInv` are
+> **fully machine-checked, parametric in `f`**:
 >
-> Spec: `specs/DDRConsensusTLAPS.tla`.
-> Run: `specs/check-parametric.sh` (requires TLAPS).
+> | Object | Verdict |
+> |--------|---------|
+> | `LEMMA CorrectCard` (`\|Correct\| = 2f+1`) | ✅ machine-checked |
+> | `LEMMA QuorumIntersect` (two `(f+1)`-subsets of `Correct` intersect) | ✅ machine-checked |
+> | `LEMMA ActiveHVLower` (the counting core, `k+t ≥ f+1`) | ✅ machine-checked |
+> | `THEOREM Init_IndInv` (`Init ⇒ IndInv`) | ✅ machine-checked |
+> | `THEOREM IndInv_Agreement` | structured; 1 `OMITTED` protocol leaf |
+> | `THEOREM IndInv_Step` | structured; 13 `OMITTED` protocol leaves |
+>
+> The key counting argument — `ActiveHVLower`, the lemma that bounds
+> conflicting-polka votes to `≤ q−1` — is now **machine-checked**, not merely
+> asserted: TLAPS discharges its inclusion-exclusion derivation against the
+> `FiniteSetTheorems` library (`FS_MajoritiesIntersect`, `FS_Union`,
+> `FS_Difference`, `FS_CardinalityType`).
+>
+> Spec: `specs/DDRConsensusTLAPS.tla`. Log: `specs/tlaps-parametric.log`.
+> Reproduce: `specs/fetch-tlaps.sh` then `specs/check-parametric.sh`.
 
 ## What M5c++ adds over M5c+
 
@@ -99,11 +114,19 @@ for Case B. □
 
 ## The three proof obligations
 
-| # | Obligation | Theorem | Proof strategy |
-|---|------------|---------|---------------|
-| 1 | `Init ⇒ IndInv` | `Init_IndInv` | Trivial: empty vote sets, `locked.has = FALSE`, `decided.has = FALSE`; all quantified conjuncts vacuously hold |
-| 2 | `IndInv ⇒ Agreement` | `IndInv_Agreement` | WLOG `r1 ≤ r2`; `Commit(r1,V)` ⇒ `Polka(r1,V)` (via `PrecommitJustified`); with `Polka(r2,W)`, `SafeInv` at `r2 ≥ r1` gives `W=V` |
-| 3 | `IndInv ∧ Next ⇒ IndInv'` | `IndInv_Step` | Per-conjunct; `SafeInv'` uses `ActiveHVLower` (case B) + uniqueness of `QuorumVal` (case C) + old `SafeInv` (case A) |
+| # | Obligation | Theorem | Verdict | Proof strategy |
+|---|------------|---------|---------|---------------|
+| 1 | `Init ⇒ IndInv` | `Init_IndInv` | ✅ machine-checked | Empty vote sets, `locked.has = FALSE`, `decided.has = FALSE`; all quantified conjuncts vacuously hold (`Values ≠ {}` for the `CHOOSE`) |
+| 2 | `IndInv ⇒ Agreement` | `IndInv_Agreement` | structured (1 omitted leaf) | WLOG `r1 ≤ r2`; `Commit(r1,V)` ⇒ `Polka(r1,V)` (via `PrecommitJustified`); with `Polka(r2,W)`, `SafeInv` at `r2 ≥ r1` gives `W=V` |
+| 3 | `IndInv ∧ Next ⇒ IndInv'` | `IndInv_Step` | structured (13 omitted leaves) | Per-conjunct; `SafeInv'` uses `ActiveHVLower` (case B) + uniqueness of `QuorumVal` (case C) + old `SafeInv` (case A) |
+
+The standalone counting lemmas `CorrectCard`, `QuorumIntersect`, and
+`ActiveHVLower` — which carry the entire `n = 3f+1` quorum-arithmetic content —
+are machine-checked outright (no omitted leaves). What remains `OMITTED` is the
+*protocol-level* glue: unfolding the large `DoRound` action and connecting it to
+the counting lemmas. Those leaves are stated as explicit TLAPS proof goals with
+their mathematical arguments in comments, so the obligation each one represents
+is precisely delimited.
 
 ## Why `n = 3f+1` exactly, not `n ≥ 3f+1`
 
@@ -125,50 +148,70 @@ the tight family `n = 3f+1, q = 2f+1`, which is the standard BFT minimum.
 
 The proof module `DDRConsensusTLAPS.tla` follows standard TLAPS conventions:
 
-- `EXTENDS Integers, FiniteSets, TLAPS` — the TLAPS module provides proof
-  tactics; FiniteSets provides `IsFiniteSet` / `Cardinality` and the key
-  library lemmas (`FS_Subset`, `FS_UnionDisjoint`, `FS_CardinalityType`).
+- `EXTENDS Integers, FiniteSets, FiniteSetTheorems, TLAPS` — `FiniteSetTheorems`
+  provides the proved cardinality lemmas the counting core cites:
+  `FS_MajoritiesIntersect` (two subsets whose sizes sum past the universe must
+  intersect — exactly quorum intersection), `FS_Union`/`FS_Difference`
+  (inclusion-exclusion), `FS_CardinalityType` (`Cardinality(S) ∈ Nat`),
+  `FS_EmptySet`, `FS_Subset`.
 - `LEMMA ... PROOF <1>1. ... <1>n. QED BY ...` — hierarchical proof structure.
 - `BY DEF Foo, Bar` — definitional unfolding for the selected backend.
 - `BY <lemma-name>` — cites a previously proved lemma.
-- Steps marked `BY ... \* (comment)` indicate the mathematical argument; the
-  backend (Z3, Isabelle) handles the arithmetic and set-theoretic goals.
+- The cardinality lemmas needed the scalar `f` typed (`ASSUME f ∈ Nat`) and the
+  set-arithmetic steps broken finely enough for Z3 — e.g. `ActiveHVLower`
+  threads `|AH|+|AF| = q`, the inclusion-exclusion bound, and the final
+  `|Active ∩ HV| + |AF| ≥ f+1` as separate sub-goals so each is a small
+  linear-arithmetic obligation.
 
 The proof of `IndInv_Step` is decomposed into 10 sub-goals (`<1>1`–`<1>10`),
 one per conjunct of `IndInv`. The hard conjunct `<1>9` (`SafeInv'`) is itself
-split into four cases (A–D) matching the possible provenance of the two polkas.
+split into the cases (A–C, plus an exhaustiveness QED) matching the possible
+provenance of the two polkas; these protocol-level leaves are the `OMITTED`
+ones, with `ActiveHVLower` cited where case (B) needs it.
 
 ## Status and the remaining gap
 
-**What M5c++ provides:**
-- A complete, mathematically verified parametric proof for all `n = 3f+1`.
-- Explicit proof steps for every conjunct of `IndInv` — no hand-wavy steps.
-- Machine-checkable obligations: running `tlaps` on `DDRConsensusTLAPS.tla`
-  sends each `BY ...` goal to Z3 / Isabelle / Zenon and reports pass/fail.
-- The `ActiveHVLower` counting argument, which is the new content over M5b.
+**What M5c++ provides (machine-checked by TLAPS):**
+- The full `n = 3f+1` quorum-intersection arithmetic, **parametric in `f`**:
+  `CorrectCard`, `QuorumIntersect`, and the new `ActiveHVLower` counting lemma
+  are discharged outright by TLAPS (Z3 + the `FiniteSetTheorems` library).
+- `Init ⇒ IndInv`, machine-checked.
+- A complete TLAPS proof *structure* for `IndInv ⇒ Agreement` and the inductive
+  step `IndInv ∧ Next ⇒ IndInv'`, with the SafeInv' case analysis (the place
+  `ActiveHVLower` plugs in) laid out explicitly.
+- A reproducible run: `specs/check-parametric.sh` reports **143 obligations,
+  0 failed** (log: `specs/tlaps-parametric.log`).
 
-**What remains:**
-- **TLAPS machine-run.** The `tlaps` tool is not installed in this
-  environment. Installing it (via the TLA+ Toolbox or the standalone Linux
-  binary) and running `specs/check-parametric.sh` would convert the proof
-  from `[PROOF STRUCTURE — pending machine-check]` to `[PROVEN — machine-checked]`.
-  The back-end obligations are straightforward finite-set cardinality and
-  arithmetic goals; no complex Isabelle tactics are needed.
+**What remains (the 14 `OMITTED` leaves):**
+- **Protocol-level glue in `IndInv_Agreement` (1 leaf) and `IndInv_Step`
+  (13 leaves).** These require unfolding the large `DoRound` action and a few
+  supporting lemmas (e.g. "a precommit-polka implies a same-round prevote-polka",
+  the message-count ↔ sender-count bridge via `UniqueVotes`). The mathematics is
+  the M5b paper proof plus the now-machine-checked `ActiveHVLower`; what is not
+  yet mechanized is the bookkeeping that threads `DoRound`'s `LET`-bindings into
+  those lemmas. This is a tractable but laborious continuation (TLAPS consensus
+  proofs of this depth typically run to hundreds of lines per conjunct).
+
+The substantive *mathematical* gap of M5b — "is the `n ≥ 3f+1` counting actually
+valid, parametrically?" — is now closed by machine: `ActiveHVLower` is the lemma
+that argument turns on, and it checks.
 
 ## Reproduce
 
 ```bash
-# Install TLAPS: https://tla.msr-inria.inria.fr/tlaps/content/Download/Binaries.html
-specs/check-parametric.sh    # runs the three obligations with TLAPS
+specs/fetch-tlaps.sh         # one-time: install tlapm to /opt/tlaps
+export PATH=/opt/tlaps/bin:$PATH
+specs/check-parametric.sh    # 143 obligations, 0 failed; lists the 14 omitted leaves
 ```
 
-## Verification ladder (complete)
+## Verification ladder
 
 ```
 TLC reachability (M5)
   → full-invariant reachability, n=4 & n=7 (M5c pt.1)
   → machine-checked inductive step, fixed MaxRound=3, corroborated at 6 (M5c)
   → machine-checked inductive step, FREE-INTEGER rounds (M5c+)
-  → TLAPS proof structure, parametric n=3f+1, unbounded (M5c++, this doc)  ← here
-  → [TLAPS machine-run: install tlaps and run check-parametric.sh]          ← final step
+  → TLAPS: parametric n=3f+1 counting core + Init machine-checked,           ← here
+    inductive-step structure with 14 omitted protocol leaves (M5c++)
+  → [discharge the 14 protocol leaves in TLAPS]                              ← remaining
 ```
