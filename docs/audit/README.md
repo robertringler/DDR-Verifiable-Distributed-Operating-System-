@@ -65,6 +65,7 @@ poset), dual-confused (colimit vs. terminal object), or a non-sequitur
 | V | [`14-inductive-invariant-verification.md`](14-inductive-invariant-verification.md) | **#3**: Apalache machine-checks the full inductive invariant at n=4 (and *finds* the missing `LockComplete` conjunct); round-robustness corroborated at MaxRound∈{3,6} |
 | V | [`15-unbounded-rounds-verification.md`](15-unbounded-rounds-verification.md) | **#4**: Apalache discharges the inductive step with round numbers as **free integers** (no MaxRound) — closing the round-magnitude gap left by #3 |
 | V | [`16-parametric-safety-tlaps.md`](16-parametric-safety-tlaps.md) | **#5**: TLAPS machine-checks the parametric `n=3f+1` quorum-intersection core (`CorrectCard`, `QuorumIntersect`, `ActiveHVLower`) + `Init⇒IndInv` — 143 obligations, 0 failed; inductive-step structure with 14 omitted protocol leaves |
+| F | [`17-ciir-toe-formal-implementation.md`](17-ciir-toe-formal-implementation.md) | **CIIR formal implementation attempt**: constructs `d_sem` (complete metric), `Φ_rec` (proven `κ=1−δ` contraction), `Π_C` (closure operator); **Theorem K** refutes the monograph's keystone (the observer map `ρ^β/Tr(ρ^β)` is *not* a strict contraction — two fixed points); corrects all 6 audit-found proof errors; Scope Theorem bounds the "theory of everything" claim. Every result status-tagged |
 
 > **Fourth finding (added 2026-06-01, after the CIIR monograph was located and
 > read as primary source — see [`11-ciir-monograph-reaudit.md`](11-ciir-monograph-reaudit.md)):**
