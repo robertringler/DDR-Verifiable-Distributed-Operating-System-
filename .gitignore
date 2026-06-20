@@ -8,3 +8,6 @@ specs/unb-logs/
 specs/states/
 *.st
 specs/_apalache-out/
+__pycache__/
+*.pyc
+papers/conlawdist/data/synthetic_demo/
