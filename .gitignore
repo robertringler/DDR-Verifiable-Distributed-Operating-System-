@@ -11,3 +11,10 @@ specs/_apalache-out/
 __pycache__/
 *.pyc
 papers/conlawdist/data/synthetic_demo/
+
+# LaTeX build artifacts
+papers/interface-limited-realism/*.aux
+papers/interface-limited-realism/*.log
+papers/interface-limited-realism/*.toc
+papers/interface-limited-realism/*.out
+papers/interface-limited-realism/*.pdf

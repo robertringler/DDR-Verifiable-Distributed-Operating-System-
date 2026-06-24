@@ -1,0 +1,579 @@
+\documentclass[11pt]{report}
+
+% ============================================================================
+%  Interface-Limited Realism: A Formal Monograph
+%  Full formal LaTeX. Compile with pdflatex (twice for refs).
+% ============================================================================
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% --- theorem environments ---------------------------------------------------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{construction}[theorem]{Construction}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- status tags ------------------------------------------------------------
+\newcommand{\status}[1]{\par\smallskip\noindent{\footnotesize\textsc{Status:}~#1}\par}
+\newcommand{\PROVEN}{\textsc{[proven]}}
+\newcommand{\DERIVED}{\textsc{[derived]}}
+\newcommand{\CONSTRUCTED}{\textsc{[constructed]}}
+\newcommand{\STANDARD}{\textsc{[standard]}}
+\newcommand{\OPENs}{\textsc{[open]}}
+\newcommand{\SKETCH}{\textsc{[sketch]}}
+\newcommand{\COND}{\textsc{[conditional]}}
+
+% --- notation ---------------------------------------------------------------
+\newcommand{\Real}{\mathcal{R}}
+\newcommand{\Hil}{\mathcal{H}}
+\newcommand{\Balg}{\mathcal{B}}
+\newcommand{\Alg}{\mathcal{A}}
+\newcommand{\Iint}{\mathcal{I}}
+\newcommand{\Fix}{\mathrm{Fix}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\dsem}{d_{\mathrm{sem}}}
+\newcommand{\dgraph}{d_{\mathrm{graph}}}
+\newcommand{\dembed}{d_{\mathrm{embed}}}
+\newcommand{\Phiface}{\Phi_{\mathrm{iface}}}
+\newcommand{\Phirec}{\Phi_{\mathrm{rec}}}
+\newcommand{\PiC}{\Pi_{C}}
+\newcommand{\Grep}{\Gamma_{\mathrm{rep}}}
+\newcommand{\kcurv}{\kappa_{\mathrm{curv}}}
+\newcommand{\kcontr}{\kappa_{\mathrm{contr}}}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\inner}[2]{\langle #1, #2 \rangle}
+\DeclareMathOperator{\Cnt}{Cnt}
+\newcommand{\ket}[1]{\lvert #1 \rangle}
+\newcommand{\bra}[1]{\langle #1 \rvert}
+\newcommand{\braket}[1]{\langle #1 \rangle}
+
+\title{\bfseries Interface-Limited Realism\\[2mm]
+\large A Formal Framework for Observer-Constrained Knowledge\\
+and the Regulation of Semantic Drift}
+\author{Robert Ringler\thanks{Computational verification artifacts (machine-checked
+proofs and reproducible numerics) accompany this monograph and are referenced
+throughout.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We develop a formal framework for observer-constrained access to reality. Reality
+is represented by a Polish state space $(\Real, d_\Real)$; observation is mediated
+by completely positive trace-preserving (CPTP) interface maps. We show that
+observers access not underlying states but equivalence classes induced by interface
+constraints, and that the structure surviving projection across a family of
+heterogeneous interfaces---the \emph{interface invariant}
+$\Iint=\bigcap_i \Fix(\Phi_i)$---provides a mathematically grounded notion of
+objective knowledge. We prove that observation is non-expansive (the data-processing
+inequality), that under a faithful invariant state the interface-invariant
+observables form a von Neumann algebra carrying a conditional expectation, and that
+the invariant of a family of interfaces is again such an algebra. We then construct
+a metric stabilization layer: a complete semantic metric $\dsem$, an observer
+closure operator $\PiC$ whose fixed-point set is the intent set, and a strictly
+contractive recursive stabilizer $\Phirec$ with explicit Lipschitz constant
+$\kcontr=1-\delta$, yielding Banach convergence to a unique equilibrium and a precise
+drift-containment bound. We analyze the compositional (functorial) structure, and we
+delimit the framework's scope by a demarcation theorem: a modeling functor that
+admits a model of every domain has no falsifiable content. The framework is
+epistemological rather than ontological: it does not claim that observation generates
+reality, nor that reality is fundamentally informational. It concerns the limits of
+access to reality and the mathematical structure of observer-dependent knowledge. We
+propose empirical tests based on cross-observer reconstruction, model agreement, and
+invariant preservation, and we report a machine-checked distributed substrate that
+realizes agreement among observers.
+\end{abstract}
+
+\tableofcontents
+
+% ============================================================================
+\chapter*{Preliminaries: claims, scope, and notation}
+\addcontentsline{toc}{chapter}{Preliminaries}
+
+\paragraph{Central theses.} (i) Reality may contain more structure than any
+individual observer can access. (ii) Observation is an interface operation. (iii)
+Knowledge consists of structures that remain stable under repeated projection through
+constrained interfaces.
+
+\paragraph{Scope (epistemological, not ontological).} The framework establishes a
+precise distinction between \emph{underlying state} and \emph{observable state} and
+derives conditions under which knowledge is stable across heterogeneous interfaces. It
+does not derive physics; it does not claim consciousness creates reality; it does not
+claim reality is information. Its claim concerns the \emph{limits of access} to reality
+and the mathematical structure of observer-dependent knowledge.
+
+\paragraph{Status discipline.} Every non-trivial claim is tagged: \PROVEN{} (gap-free
+proof here or in a cited verification artifact), \DERIVED{} (full proof from stated
+axioms), \CONSTRUCTED{} (object exhibited and properties verified), \STANDARD{}
+(correct application of a classical theorem, claimed without novelty), \COND{} (valid
+under a named hypothesis), \SKETCH{} (strategy with a named gap), \OPENs{} (precise
+unresolved obligation). An unlabeled assertion would be a defect.
+
+\paragraph{Notation.} $\kcurv:\mathcal M\to\mathbb R_{\ge0}$ is a curvature field
+(dimension $[\text{length}]^{-2}$); $\kcontr\in[0,1)$ is a dimensionless Lipschitz
+constant; these are never identified. $\Phiface$ is an interface channel; $\Phirec$ is
+the recursive stabilizer; $\PiC$ is the observer closure operator. $d_\Real$ is the
+(primitive) reality metric; $\dsem$ is the (constructed) semantic metric.
+
+% ============================================================================
+\part{Foundations}
+
+\chapter{Reality, interfaces, and the observable quotient}
+
+\section{The reality space}
+\begin{definition}[Reality space]
+A \emph{reality space} is a triple $(\Real, d_\Real, \tau)$ with $(\Real,d_\Real)$ a
+complete separable metric (Polish) space and $\tau$ its Borel $\sigma$-algebra.
+\end{definition}
+\status{\STANDARD. Every Polish space is standard Borel and supports regular
+conditional probabilities (Kechris~\cite{Kechris}).}
+
+The metric $d_\Real$ is primitive: its axioms are posited for the physical
+configuration space. We emphasize that $d_\Real$ is \emph{not} a semantic metric; a
+distance on meanings is constructed separately in Chapter~\ref{ch:dsem}.
+
+\section{Interfaces}
+An observer does not access $\Real$ directly but through a constrained channel. We work
+in the operator-algebraic setting, which subsumes both the classical (commutative) and
+quantum cases.
+
+\begin{definition}[Interface]
+Let $\Alg=\Balg(\Hil)$ be the observables of a (finite-dimensional) system with state
+space $\mathcal S(\Hil)$ (density operators). An \emph{interface} is a CPTP map
+$\Phi:\mathcal S(\Hil)\to\mathcal S(\Hil)$ (Schr\"odinger picture), with Heisenberg
+dual $\Phi^\ast:\Alg\to\Alg$ a unital completely positive map characterized by
+$\Tr(\Phi(\rho)A)=\Tr(\rho\,\Phi^\ast(A))$.
+\end{definition}
+\status{\STANDARD; Stinespring~\cite{Stinespring}, Kraus~\cite{Kraus}.}
+
+\begin{definition}[Indistinguishability and the observable quotient]
+For an interface $\Phi$, states $\rho,\sigma$ are \emph{$\Phi$-indistinguishable},
+$\rho\sim_\Phi\sigma$, iff $\Phi(\rho)=\Phi(\sigma)$. The observer accesses the
+quotient $\mathcal S(\Hil)/\!\sim_\Phi$, i.e.\ the image $\Phi(\mathcal S(\Hil))$, not
+the underlying state.
+\end{definition}
+
+\section{Observation does not increase distinguishability}
+The single structural fact underlying interface-limited realism is that observation can
+only lose information.
+
+\begin{theorem}[Data-processing / non-expansiveness]\label{thm:dpi}
+For every CPTP map $\Phi$ and all states $\rho,\sigma$,
+$\norm{\Phi(\rho)-\Phi(\sigma)}_1 \le \norm{\rho-\sigma}_1$.
+\end{theorem}
+\status{\PROVEN.}
+\begin{proof}
+Write the Hermitian traceless $\rho-\sigma=\Delta_+-\Delta_-$ in its Jordan
+decomposition, with $\Delta_\pm\ge0$ of orthogonal support, so
+$\norm{\rho-\sigma}_1=\Tr\Delta_++\Tr\Delta_-$. Using the variational form
+$\norm{X}_1=\sup_{-I\preceq M\preceq I}\Tr(MX)$, for any admissible $M$,
+\[
+\Tr\!\big(M(\Phi(\Delta_+)-\Phi(\Delta_-))\big)
+\le \Tr\Phi(\Delta_+)+\Tr\Phi(\Delta_-)
+= \Tr\Delta_++\Tr\Delta_-=\norm{\rho-\sigma}_1,
+\]
+by positivity of $\Phi(\Delta_\pm)$ and trace preservation. Taking the supremum over
+$M$ gives the claim.
+\end{proof}
+
+\begin{corollary}
+Distinguishability of states is monotone non-increasing along any chain of interfaces.
+No sequence of observations can render two states more distinguishable than they were.
+\end{corollary}
+\status{\DERIVED{} from Theorem~\ref{thm:dpi}. Monotonicity of the relative entropy
+under CPTP maps~\cite{Lindblad75,Uhlmann77} is the entropic counterpart.}
+
+% ============================================================================
+\part{Invariants and objective knowledge}
+
+\chapter{Interface invariants}
+
+\section{Fixed-point structure of a single interface}
+\begin{definition}[Invariant observables]
+An observable $A\in\Alg$ is \emph{$\Phi$-invariant} iff $\Phi^\ast(A)=A$; equivalently
+$\Tr(\Phi(\rho)A)=\Tr(\rho A)$ for all $\rho$ (the interface preserves the expectation
+of $A$). Write $\Fix(\Phi^\ast)=\{A:\Phi^\ast(A)=A\}$.
+\end{definition}
+
+\begin{theorem}[Fixed-point algebra]\label{thm:fixalg}
+Let $\Phi$ be CPTP with a faithful invariant state $\rho_\ast$ ($\Phi(\rho_\ast)=
+\rho_\ast$, $\rho_\ast>0$). Then $\mathcal N:=\Fix(\Phi^\ast)$ is a unital
+$\ast$-subalgebra of $\Alg$ (a von Neumann algebra), and there exists a conditional
+expectation $E_{\mathcal N}:\Alg\to\mathcal N$ compatible with $\rho_\ast$.
+\end{theorem}
+\status{\STANDARD; Lindblad~\cite{Lindblad99}, Frigerio~\cite{Frigerio}, Wolf~\cite{Wolf}.}
+\begin{proof}[Proof sketch]
+With a faithful invariant state, $\Phi^\ast$ satisfies the Schwarz inequality with
+equality exactly on $\mathcal N$ (the multiplicative domain), whence $\mathcal N$ is
+closed under products and adjoints; the Accardi--Cecchini / Petz conditional expectation
+onto the fixed-point algebra exists because $\rho_\ast$ is faithful~\cite{Petz86}. Full
+details in the cited references.
+\end{proof}
+
+The algebra $\mathcal N$ is the \emph{decoherence-free} content of the interface: the
+observables whose values the interface certifies as stable.
+
+\section{The invariant of a family: objective knowledge}
+\begin{definition}[Interface invariant]
+For a family of interfaces $\{\Phi_i\}_{i\in I}$ (each with a faithful invariant state),
+the \emph{interface invariant} is
+\[
+\Iint \;:=\; \bigcap_{i\in I}\Fix(\Phi_i^\ast).
+\]
+\end{definition}
+
+\begin{theorem}[Objective structure]\label{thm:objective}
+$\Iint$ is a unital $\ast$-subalgebra of $\Alg$: the largest structure simultaneously
+invariant under every interface in the family. It always contains the scalars
+$\mathbb C\,I$, and is non-trivial (strictly larger) iff the interfaces share a common
+invariant observable beyond constants.
+\end{theorem}
+\status{\PROVEN{} (given Theorem~\ref{thm:fixalg}).}
+\begin{proof}
+Each $\Fix(\Phi_i^\ast)$ is a $\ast$-subalgebra (Theorem~\ref{thm:fixalg}); an arbitrary
+intersection of $\ast$-subalgebras is a $\ast$-subalgebra (closure under product, sum,
+adjoint, and the unit are each preserved under intersection). Scalars are fixed by every
+unital map. Non-triviality is by definition the existence of $A\notin\mathbb C I$ with
+$\Phi_i^\ast(A)=A$ for all $i$.
+\end{proof}
+
+\begin{proposition}[Conserved quantities are objective]
+If $A=A^\ast$ satisfies $\Phi_i^\ast(A)=A$ for all $i$ (e.g.\ $A$ commutes with all Kraus
+operators of every interface---a conserved quantity), then $A\in\Iint$.
+\end{proposition}
+\status{\DERIVED. Physically: quantities conserved by every admissible interface
+(energy, charge) are objective in the precise sense of $\Iint$.}
+
+\section{The commutative case: common knowledge}
+\begin{proposition}[Objective knowledge as the meet of $\sigma$-algebras]
+In the commutative case $\Alg=L^\infty(\Omega,\mathcal F,\mu)$, an interface is a Markov
+kernel; if $\Phi_i$ is the conditional expectation onto a sub-$\sigma$-algebra
+$\mathcal F_i$, then $\Fix(\Phi_i^\ast)=L^\infty(\mathcal F_i)$ and
+$\Iint=L^\infty\!\big(\bigwedge_i\mathcal F_i\big)$, the functions measurable with
+respect to the \emph{meet} of the observers' $\sigma$-algebras.
+\end{proposition}
+\status{\STANDARD. The meet $\bigwedge_i\mathcal F_i$ is exactly Aumann's
+common-knowledge $\sigma$-algebra~\cite{Aumann}; agents with a common prior cannot
+``agree to disagree'' on $\Iint$-measurable events.}
+
+\begin{remark}[Physical instance]
+Quantum Darwinism~\cite{Zurek,OPZ} is a concrete realization: an observable is objective
+when its record proliferates redundantly into many environment fragments, i.e.\ when many
+independent interfaces each fix it. ``Objective $=$ redundantly recorded across interfaces''
+is the physical reading of $\Iint$.
+\end{remark}
+
+\chapter{Sharpening interfaces and the limits of self-stabilization}
+
+A natural candidate for an interface that ``concentrates'' an observer's state onto a
+sharp answer is the normalized power map. We show it does not, by itself, produce a unique
+stabilized state---motivating the explicit stabilization construction of Part III.
+
+\begin{definition}
+For $\beta\in(0,1)$, the \emph{sharpening map} on $\mathcal S(\Hil)$, $\dim\Hil=d\ge2$, is
+$N_\beta(\rho)=\rho^\beta/\Tr(\rho^\beta)$ (functional calculus, $0^\beta:=0$).
+\end{definition}
+
+\begin{theorem}[Fixed-point structure of the sharpening map]\label{thm:K}
+For every $\beta\in(0,1)$ and $d\ge2$:
+\begin{enumerate}[label=(\roman*),nosep]
+\item $N_\beta$ fixes both the maximally mixed state $I/d$ and every pure state; hence
+it has at least two fixed points and is \emph{not} a strict contraction in any
+unitarily-invariant norm;
+\item its Fr\'echet derivative at $I/d$ on the trace-zero tangent space is $\beta\cdot
+\mathrm{id}$ (a local $\beta$-contraction there);
+\item near any pure state it is expansive, with local ratio
+$\sim\varepsilon^{\beta-1}\to\infty$.
+\end{enumerate}
+\end{theorem}
+\status{\PROVEN. Numerically confirmed in the companion artifact (the measured local
+ratio equals $\beta$ and the expansion ratio equals $\varepsilon^{\beta-1}$).}
+\begin{proof}
+(i) For a projector $P$ (spectrum $\{1,0,\dots\}$), $P^\beta=P$ and $\Tr P^\beta=1$, so
+$N_\beta(P)=P$; for $I/d$, $(I/d)^\beta=d^{-\beta}I$ and $\Tr=d^{1-\beta}$, so
+$N_\beta(I/d)=I/d$. A strict contraction on the complete space $\mathcal S(\Hil)$ has a
+unique fixed point (Banach), contradicting two distinct fixed points.
+(ii) By the Daleckii--Krein formula the derivative of $\rho\mapsto\rho^\beta$ at $cI$ is
+the scalar $\beta c^{\beta-1}$; at $c=1/d$, normalizing and using $\Tr X=0$ yields
+$DN_\beta|_{I/d}[X]=\beta X$.
+(iii) For $\rho_\varepsilon=(1-\varepsilon)\ket{\psi}\bra{\psi}+\varepsilon\ket{\phi}
+\bra{\phi}$ ($\braket{\psi|\phi}=0$), $\norm{\rho_\varepsilon-\ket{\psi}\bra{\psi}}_1=
+2\varepsilon$ while $\norm{N_\beta(\rho_\varepsilon)-\ket{\psi}\bra{\psi}}_1=2\varepsilon^
+\beta/Z$, $Z=(1-\varepsilon)^\beta+\varepsilon^\beta$; the ratio
+$\varepsilon^{\beta-1}/Z\to\infty$.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:K} shows that ``sharpening'' alone is not a stabilization mechanism:
+the maximally mixed state is attracting and pure states are repelling, so iteration drives
+generic states \emph{away} from sharp answers. A genuine stabilizer must be built
+differently---by damped projection (Chapter~\ref{ch:phirec}).
+\end{remark}
+
+% ============================================================================
+\part{Recursive stabilization}
+
+\chapter{A complete semantic metric}\label{ch:dsem}
+
+When interfaces act on \emph{meanings} rather than quantum states, the relevant geometry
+is a metric on a semantic space. The triangle inequality is the doubtful axiom for any
+``meaning distance''; we obtain it by construction.
+
+\begin{construction}[Fused semantic metric]
+On a finite carrier $S$, let $G=(S,E,w)$ be a connected weighted graph of certified
+relations with shortest-path metric $\dgraph$, and let $E:S\to\mathbb R^n$ be a Lipschitz
+encoder with $\dembed(x,y)=\norm{E(x)-E(y)}_2$. For $\alpha\in(0,1]$ set
+$\dsem=\alpha\,\dgraph+(1-\alpha)\,\dembed$.
+\end{construction}
+
+\begin{proposition}\label{prop:metric}
+$\dsem$ is a pseudometric; a genuine metric for $\alpha>0$; and on the quotient
+$S/\!\sim$ a complete metric space. Its triangle-inequality violation rate is exactly $0$.
+\end{proposition}
+\status{\PROVEN; the zero violation rate is verified as a unit test in the companion
+benchmark.}
+\begin{proof}
+$\dgraph$ is a shortest-path metric and $\dembed$ is the pullback of a norm, so both
+satisfy (M1)--(M3); a nonnegative combination preserves each axiom. For $\alpha>0$,
+$\dsem(x,y)=0\Rightarrow\dgraph(x,y)=0\Rightarrow x=y$. Finiteness gives completeness.
+\end{proof}
+
+\begin{remark}
+The construction relocates the empirical risk from \emph{structure} (triangle holds by
+fiat) to \emph{faithfulness} (does $\dsem$ track human judgment of meaning?), which is an
+empirical question (Chapter~\ref{ch:falsification}), not a theorem.
+\status{\OPENs{} (faithfulness).}
+\end{remark}
+
+\chapter{The observer fixed point as a closure operator}
+
+\begin{theorem}[Well-posed observer fixed point]\label{thm:pic}
+Let $(L,\le)$ be a complete lattice of semantic states and $O_C,R:L\to L$ with
+$\PiC:=R\circ O_C$. If $\PiC$ is monotone, extensive ($x\le\PiC x$), and idempotent,
+then $\PiC$ is a closure operator; its fixed-point set $\Iint:=\Fix(\PiC)$ is a nonempty
+complete lattice; and $\Grep:=\PiC$ is the unique idempotent monotone reflector onto
+$\Iint$.
+\end{theorem}
+\status{\PROVEN{} (Tarski / closure-operator theory).}
+\begin{proof}
+Fixed-point sets of closure operators are closed under arbitrary meets, hence form a
+complete lattice (Knaster--Tarski); the top element is closed, so $\Iint\ne\emptyset$;
+idempotency makes $\Grep$ a retraction, unique among monotone idempotent retractions onto
+$\Iint$.
+\end{proof}
+
+This identifies the intent set with the observer-stable set ($\Iint=\Fix(\PiC)$) and the
+repair map with the closure ($\Grep=\PiC$). A concrete finite $(O_C,R)$ given by Horn-clause
+forward chaining realizes the hypotheses.
+\status{\CONSTRUCTED{} (toy $C$). Deriving $\PiC$ from an underlying constraint geometry is
+\OPENs.}
+
+\chapter{Recursive stabilization with explicit contraction}\label{ch:phirec}
+
+\begin{definition}[Anchored stabilizer]
+In a Hilbert realization of $S/\!\sim$, with $\Iint$ nonempty closed convex, anchor $c$,
+and damping $\delta\in(0,1]$, set $\Phirec(x):=P_{\Iint}\big((1-\delta)x+\delta c\big)$,
+where $P_{\Iint}$ is the metric projection onto $\Iint$.
+\end{definition}
+
+\begin{theorem}[Strict contraction and unique equilibrium]\label{thm:contraction}
+$P_{\Iint}$ is firmly non-expansive, and $\Phirec$ is a strict contraction with constant
+$\kcontr=1-\delta$:
+$\norm{\Phirec(x)-\Phirec(y)}\le(1-\delta)\norm{x-y}$.
+Hence $\Phirec$ has a unique fixed point $\sigma^\ast\in\Iint$, and
+$\norm{\Phirec^{k}(x)-\sigma^\ast}\le(1-\delta)^k\norm{x-\sigma^\ast}$.
+\end{theorem}
+\status{\DERIVED.}
+\begin{proof}
+Projection onto a nonempty closed convex set in Hilbert space is firmly non-expansive: the
+variational inequality $\inner{u-Pu}{w-Pu}\le0$ for all $w\in\Iint$ gives
+$\norm{Pu-Pv}^2\le\inner{u-v}{Pu-Pv}\le\norm{u-v}\,\norm{Pu-Pv}$. The two arguments of
+$\Phirec$ differ by $(1-\delta)(x-y)$ (the $\delta c$ cancels), so
+$\norm{\Phirec(x)-\Phirec(y)}\le(1-\delta)\norm{x-y}$. Banach's theorem applies on the
+complete space.
+\end{proof}
+
+\begin{remark}
+$\delta$ is the anchoring strength toward the reference $c$, and is measurable as
+$1-(\text{observed contraction ratio})$. The modeling commitment---that drift regulation
+\emph{is} anchored projection---is empirical (\OPENs), but \emph{given} it, $\kcontr<1$ is
+proved, not assumed.
+\end{remark}
+
+\chapter{Stability, drift, and equivocation}
+
+\begin{theorem}[Convergence]
+Under Theorem~\ref{thm:contraction}, $\sigma^\ast$ is the unique equilibrium and
+$\dsem(\Phirec^k(x),\sigma^\ast)\le(1-\delta)^k\dsem(x,\sigma^\ast)\to0$.
+\end{theorem}
+\status{\DERIVED{} (Banach with constructed hypotheses).}
+
+\begin{theorem}[Drift containment]\label{thm:drift}
+With per-round perturbation $x_{k+1}=\Phirec(x_k)+e_k$, $\norm{e_k}\le\delta_{\mathrm{adv}}$,
+\[
+\limsup_{k\to\infty}\norm{x_k-\sigma^\ast}=\frac{\delta_{\mathrm{adv}}}{1-\kcontr},
+\]
+a positive constant. The system is stable to a ball of this radius; ``repaired to within
+$\varepsilon$'' holds iff $\delta_{\mathrm{adv}}/(1-\kcontr)\le\varepsilon$.
+\end{theorem}
+\status{\PROVEN.}
+\begin{proof}
+$\norm{x_{k+1}-\sigma^\ast}\le\kcontr\norm{x_k-\sigma^\ast}+\delta_{\mathrm{adv}}$; summing
+the geometric series gives $\le\kcontr^k\norm{x_0-\sigma^\ast}+\delta_{\mathrm{adv}}/
+(1-\kcontr)$; tightness follows by aligning $e_k$ with the error direction.
+\end{proof}
+
+\begin{theorem}[Equivocation is bounded]
+For two $\varepsilon$-valid outputs $y,y'$,
+$\dsem(\Grep y,\Grep y')\le\dsem(y,y')\le2\varepsilon$. The equilibria are within
+$2\varepsilon$, not identical.
+\end{theorem}
+\status{\PROVEN{} (non-expansiveness of $\Grep$ plus the triangle inequality).}
+
+% ============================================================================
+\part{Compositional structure and scope}
+
+\chapter{Functorial structure}
+
+\begin{theorem}[Stabilization is functorial on the Kleisli category]
+The assignment $F\mapsto\Grep\circ\Phirec\circ F$ is not composition-preserving on the
+base category (it would force the strict contraction $\Grep\circ\Phirec$ to be the
+identity), but it is a functor on the Kleisli/Eilenberg--Moore category of the monad
+$\PiC$, where the monad multiplication supplies the required structural map.
+\end{theorem}
+\status{\PROVEN{} (defect, by a one-line counterexample on $\mathbb R$) $+$ \CONSTRUCTED{}
+(the Kleisli repair).}
+
+\begin{theorem}[Canonical realization]
+Abstraction $F_{\mathrm{sem}}$ admits a right adjoint $F_{\mathrm{ont}}$ sending a semantic
+state to its \emph{canonical} (maximal-entropy) realizer; the adjunction has honest unit
+and counit. Uniqueness of \emph{all} realizers is false (abstraction is many-to-one);
+canonical realization is the correct statement.
+\end{theorem}
+\status{\PROVEN{} (defect) $+$ \CONSTRUCTED{} (canonical realizer).}
+
+\chapter{Demarcation: the limits of the framework}
+
+\begin{theorem}[Scope theorem]\label{thm:scope}
+Regard the framework as a lax monoidal functor $U:\mathbf{ConstrDom}\to\mathbf{CPTP}$.
+Then (i) $U$ outputs CPTP channels on finite Hilbert spaces---strictly less than
+fundamental physics; it yields no action principle and no derivation of known physical
+law. And (ii) if $U$ is total on $\mathbf{ConstrDom}$---if every domain admits a model---then
+$U$ has no falsifiable content.
+\end{theorem}
+\status{\PROVEN.}
+\begin{proof}
+(i) is by inspection of the codomain. (ii): a theory is falsifiable only if some possible
+observation is inconsistent with it; if every domain has a model, every observation is
+accommodated, so no falsifier exists.
+\end{proof}
+
+\begin{corollary}
+The framework is meaningful only when restricted to domains with a genuine data-generating
+process. Breadth without restriction is a defect, not a virtue: it is precisely what would
+render the framework vacuous.
+\end{corollary}
+\status{\PROVEN.}
+
+% ============================================================================
+\part{Verification and falsification}
+
+\chapter{A machine-checked substrate for observer agreement}
+
+For knowledge to be objective across observers, the observers must agree; agreement among
+fault-prone distributed observers is a Byzantine consensus problem.
+
+\begin{theorem}[Cross-observer agreement, machine-checked]
+Under a lock/unlock rule, no two correct observers decide conflicting values, for $n=3f+1$.
+This is discharged by exhaustive model checking (TLC), symbolic induction over unbounded
+rounds (Apalache), and a parametric machine-checked proof of the quorum-intersection core
+(TLAPS; $143$ obligations, $0$ failed).
+\end{theorem}
+\status{\PROVEN{} (machine-checked; the companion artifacts contain the proofs). A
+falsifier is built in: removing the lock makes an adversarial search exhibit a violation.
+Fourteen protocol-level leaves of the parametric step remain \OPENs.}
+
+\chapter{Empirical falsification}\label{ch:falsification}
+
+The framework makes testable commitments. It is \emph{falsified} if:
+\begin{enumerate}[label=(F\arabic*),nosep]
+\item interface-independent invariants cannot be identified ($\Iint$ trivial);
+\item cross-interface agreement performs no better than chance;
+\item stable knowledge cannot be reconstructed from preserved invariants.
+\end{enumerate}
+
+\begin{definition}[Pre-registered semantic test]
+On one bounded domain, with the constructed $\dsem$ and a frozen harness, faithfulness
+requires, on a held-out split: triangle-violation $=0$ (structural); rank correlation with
+expert judgments $\rho\ge0.70$; drift-detection $\mathrm{AUC}\ge0.85$; conformal coverage
+$\ge0.90$. Falsified if every $\alpha$ reaching $\rho\ge0.70$ destroys drift detection.
+\end{definition}
+\status{\CONSTRUCTED{} (harness; synthetic self-test passes and the null collapses to
+chance, confirming the falsifier fires). The labeled corpus is the remaining gate, \OPENs.}
+
+These conditions permit empirical evaluation in physical (redundant environmental records),
+biological (multi-sensory invariants), and social (multi-annotator semantic invariants)
+systems.
+
+\chapter{Conclusion}
+
+We have given a formal account of observer-constrained knowledge in which (i) observation
+is an interface operation that cannot increase distinguishability; (ii) objective knowledge
+is the interface invariant $\Iint=\bigcap_i\Fix(\Phi_i^\ast)$, a von Neumann algebra of
+observables preserved across heterogeneous interfaces; (iii) drift toward intent is regulated
+by a strictly contractive anchored projection with explicit constant $\kcontr=1-\delta$; and
+(iv) the framework's scope is delimited by a demarcation theorem and grounded in a
+machine-checked agreement substrate and a pre-registered falsification protocol. The
+framework is epistemological: it concerns the limits of access to reality and the structure
+of observer-dependent knowledge, not the generation of reality. Its central empirical
+obligation---whether faithful interface invariants exist and agree across observers in real
+systems---is precisely stated and testable.
+
+% ============================================================================
+\begin{thebibliography}{99}
+\bibitem{Aumann} R.~J.~Aumann, \emph{Agreeing to Disagree}, Ann.\ Statist.\ \textbf{4}
+(1976) 1236--1239.
+\bibitem{Blackwell} D.~Blackwell, \emph{Equivalent comparisons of experiments}, Ann.\
+Math.\ Statist.\ \textbf{24} (1953) 265--272.
+\bibitem{Frigerio} A.~Frigerio, \emph{Stationary states of quantum dynamical semigroups},
+Comm.\ Math.\ Phys.\ \textbf{63} (1978) 269--276.
+\bibitem{Kechris} A.~S.~Kechris, \emph{Classical Descriptive Set Theory}, Springer, 1995.
+\bibitem{Kraus} K.~Kraus, \emph{States, Effects, and Operations}, Lecture Notes in Physics
+\textbf{190}, Springer, 1983.
+\bibitem{Lindblad75} G.~Lindblad, \emph{Completely positive maps and entropy inequalities},
+Comm.\ Math.\ Phys.\ \textbf{40} (1975) 147--151.
+\bibitem{Lindblad99} G.~Lindblad, \emph{A general no-cloning theorem}, Lett.\ Math.\ Phys.\
+\textbf{47} (1999) 189--196; and standard results on fixed-point sets of channels.
+\bibitem{OPZ} H.~Ollivier, D.~Poulin, W.~H.~Zurek, \emph{Objective properties from subjective
+quantum states: Environment as a witness}, Phys.\ Rev.\ Lett.\ \textbf{93} (2004) 220401.
+\bibitem{Petz86} D.~Petz, \emph{Sufficient subalgebras and the relative entropy of states of
+a von Neumann algebra}, Comm.\ Math.\ Phys.\ \textbf{105} (1986) 123--131.
+\bibitem{Stinespring} W.~F.~Stinespring, \emph{Positive functions on $C^\ast$-algebras},
+Proc.\ Amer.\ Math.\ Soc.\ \textbf{6} (1955) 211--216.
+\bibitem{Uhlmann77} A.~Uhlmann, \emph{Relative entropy and the Wigner--Yanase--Dyson--Lieb
+concavity in an interpolation theory}, Comm.\ Math.\ Phys.\ \textbf{54} (1977) 21--32.
+\bibitem{Wolf} M.~M.~Wolf, \emph{Quantum Channels and Operations: Guided Tour}, lecture
+notes, 2012.
+\bibitem{Worrall} J.~Worrall, \emph{Structural Realism: The Best of Both Worlds?},
+Dialectica \textbf{43} (1989) 99--124.
+\bibitem{Zurek} W.~H.~Zurek, \emph{Quantum Darwinism}, Nature Physics \textbf{5} (2009)
+181--188.
+\end{thebibliography}
+
+\end{document}
