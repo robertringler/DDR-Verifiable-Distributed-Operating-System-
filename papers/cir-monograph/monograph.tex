@@ -1,0 +1,549 @@
+\documentclass[11pt]{report}
+% ============================================================================
+%  Constrained-Interface Information Regulation: A Formal Monograph
+%  Full 22-chapter monograph. Compile: pdflatex (x2 for TOC/refs).
+% ============================================================================
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm,enumitem,microtype,booktabs,longtable}
+\usepackage[hidelinks]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{construction}[theorem]{Construction}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\status}[1]{\par\smallskip\noindent{\footnotesize\textsc{Status:}~#1}\par}
+\newcommand{\PROVEN}{\textsc{[proven]}}
+\newcommand{\DERIVED}{\textsc{[derived]}}
+\newcommand{\CONSTRUCTED}{\textsc{[constructed]}}
+\newcommand{\STANDARD}{\textsc{[standard]}}
+\newcommand{\OPENs}{\textsc{[open]}}
+\newcommand{\SKETCH}{\textsc{[sketch]}}
+\newcommand{\COND}{\textsc{[conditional]}}
+
+\newcommand{\Real}{\mathcal{R}}
+\newcommand{\Hil}{\mathcal{H}}
+\newcommand{\Balg}{\mathcal{B}}
+\newcommand{\Iint}{\mathcal{I}}
+\newcommand{\Fix}{\mathrm{Fix}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\dsem}{d_{\mathrm{sem}}}
+\newcommand{\dgraph}{d_{\mathrm{graph}}}
+\newcommand{\dembed}{d_{\mathrm{embed}}}
+\newcommand{\Phiface}{\Phi_{\mathrm{iface}}}
+\newcommand{\Phirec}{\Phi_{\mathrm{rec}}}
+\newcommand{\PiC}{\Pi_{C}}
+\newcommand{\Grep}{\Gamma_{\mathrm{rep}}}
+\newcommand{\kcurv}{\kappa_{\mathrm{curv}}}
+\newcommand{\kcontr}{\kappa_{\mathrm{contr}}}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\inner}[2]{\langle #1, #2 \rangle}
+\newcommand{\ket}[1]{\lvert #1 \rangle}
+\newcommand{\bra}[1]{\langle #1 \rvert}
+\newcommand{\braket}[1]{\langle #1 \rangle}
+\newcommand{\Mink}{\mathbb{R}^{1+d}}
+
+\title{\bfseries Constrained-Interface Information Regulation\\[2mm]
+\large A Formal Monograph: Foundations, Dynamics,\\
+Semantic Stabilization, and Verification}
+\author{Robert Ringler\thanks{Machine-checked proofs and reproducible numerical
+artifacts accompany this monograph and are referenced by chapter.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We develop a formal framework---Constrained-Interface Information Regulation
+(CIIR)---for systems whose effective state is the state accessible through a
+formally constrained observation interface. The monograph is organized in five
+parts. Part~I builds the operator-algebraic foundations: a Polish reality space, a
+constraint manifold, a completely positive trace-preserving (CPTP) interface map,
+and the finite-dimensional structure of the constraint algebra. Part~II develops the
+dynamics as a GKLS (Lindblad) open-system semigroup, establishes the data-processing
+(non-expansiveness) theorem, characterizes physically admissible generators,
+analyzes the spectral-gap route to strict contraction, and proves a fixed-point
+structure theorem for the normalized power (``sharpening'') map. Part~III constructs
+the semantic-regulation layer: a complete semantic metric, an observer closure
+operator whose fixed-point set is the intent set, and a strictly contractive
+recursive stabilizer with explicit Lipschitz constant $\kcontr=1-\delta$, yielding
+Banach convergence, a sharp drift-containment bound, and bounded equivocation.
+Part~IV treats the compositional (functorial) structure and proves a scope
+(demarcation) theorem. Part~V grounds the framework in a machine-checked distributed
+agreement substrate and a pre-registered empirical falsification programme. Every
+non-trivial claim is tagged by epistemic status; results that are standard
+applications of classical theorems are labelled as such.
+\end{abstract}
+
+\tableofcontents
+
+% ============================================================================
+\chapter*{Preliminaries: theses, scope, and notation}
+\addcontentsline{toc}{chapter}{Preliminaries}
+
+\paragraph{Theses.} (i) A system's effective state is the state accessible through a
+constrained interface. (ii) Legitimate states are the fixed points of
+observe-then-reconstruct. (iii) Departure from the legitimate set is corrected by a
+contraction toward it.
+
+\paragraph{Scope (epistemological, not ontological).} The framework concerns the
+limits of access to a system's state and the structure of observer-dependent
+knowledge. It does not derive fundamental physics, does not claim observation
+generates reality, and does not claim reality is information.
+
+\paragraph{Status discipline.} \PROVEN{} (gap-free proof here or in a cited
+artifact), \DERIVED{} (full proof from stated axioms), \CONSTRUCTED{} (object
+exhibited, properties verified), \STANDARD{} (correct application of a classical
+theorem, claimed without novelty), \COND{} (valid under a named hypothesis),
+\SKETCH{} (strategy with a named gap), \OPENs{} (precise unresolved obligation). An
+unlabeled assertion is a defect.
+
+\paragraph{Notation.} $\kcurv:\mathcal M\to\mathbb R_{\ge0}$ is a curvature field
+(dimension $[\text{length}]^{-2}$); $\kcontr\in[0,1)$ is a dimensionless Lipschitz
+constant; the two are never identified. $\Phiface$ is the interface channel;
+$\Phirec$ the recursive stabilizer; $\PiC$ the observer closure operator; $d_\Real$
+the primitive reality metric; $\dsem$ the constructed semantic metric.
+
+% ============================================================================
+\part{Foundations}
+
+\chapter{The programme and its scope}
+The framework has two layers, kept formally separate throughout: a physical/operator
+layer (Chapters~2--12), a genuine open-quantum-system construction; and a
+semantic/governance layer (Chapters~13--19), a metric-stabilization system. The layers
+are related by analogy, not identity; each bridge is labelled (identity, construction,
+or analogy). The scope of the whole is fixed by the demarcation theorem
+(Chapter~19): the framework is a compositional \emph{modeling} functor, meaningful only
+when restricted to domains with a genuine data-generating process.
+\status{\STANDARD{} (programmatic).}
+
+\chapter{The reality space}
+\begin{definition}[Reality space]
+A \emph{reality space} is a triple $(\Real,d_\Real,\tau)$ with $(\Real,d_\Real)$ a
+complete separable metric (Polish) space and $\tau$ its Borel $\sigma$-algebra.
+\end{definition}
+\status{\STANDARD; Polish $\Rightarrow$ standard Borel, with regular conditional
+probabilities and disintegration (Kechris~\cite{Kechris}).}
+The metric $d_\Real$ is a posited primitive for physical configurations; it is not a
+semantic metric. A distance on meanings is constructed in Chapter~\ref{ch:dsem}.
+
+\chapter{Constraint geometry}
+\begin{definition}[Constraint manifold]
+A \emph{constraint manifold} is a smooth Riemannian manifold $(\mathcal M,g)$ with a
+nonnegative scalar curvature field $\kcurv:\mathcal M\to\mathbb R_{\ge0}$ encoding local
+constraint stiffness, and the Levi-Civita connection of $g$.
+\end{definition}
+\status{\STANDARD{} (assumed structure).}
+\begin{remark}
+$\kcurv$ has dimension $[\text{length}]^{-2}$; the contraction constant $\kcontr$ of
+Chapter~\ref{ch:phirec} is dimensionless. By dimensional analysis they are distinct
+objects and are never identified.
+\status{\PROVEN{} (dimensional analysis).}
+\end{remark}
+The constraint manifold grounds ``constraint geometry'' as geometry; it does not by
+itself determine the observer projector $\PiC$, whose construction from the geometry is
+\OPENs{} (Chapter~\ref{ch:pic}).
+
+\chapter{Constraint operators and the interface map}
+\begin{definition}[Constraint system]
+A \emph{constraint system} on a finite-dimensional Hilbert space $\Hil$ is a finite
+family $\{\hat C_i\}$ of self-adjoint operators; the constraint algebra $\mathcal A$ is
+the unital $\ast$-algebra they generate.
+\end{definition}
+\begin{definition}[Interface map]
+The \emph{interface map} is a CPTP map $\Phiface:\Balg(\Real_{\mathrm{op}})\to\Balg(\Hil)$,
+with Stinespring dilation $\Phiface(X)=V^\ast(X\otimes I)V$ and Kraus form
+$\Phiface(X)=\sum_a K_a^\ast X K_a$, $\sum_a K_a^\ast K_a=I$.
+\end{definition}
+\status{\STANDARD; Stinespring~\cite{Stinespring}, Kraus~\cite{Kraus}.}
+Constrained observation is the action of an interface: it presents the image of a state
+under $\Phiface$, not the underlying state.
+
+\chapter{Operator-algebra structure}
+\begin{theorem}[Block decomposition]
+A finite-dimensional $\ast$-algebra $\mathcal A\subseteq\Balg(\Hil)$ is
+$\ast$-iso\-morphic to $\bigoplus_{j=1}^r M_{k_j}(\mathbb C)$, and $\Hil$ decomposes
+compatibly as $\bigoplus_j(\mathbb C^{k_j}\otimes\mathbb C^{m_j})$.
+\end{theorem}
+\status{\STANDARD{} (Artin--Wedderburn; finite-dimensional $C^\ast$-structure).}
+\begin{corollary}
+The centre is spanned by sector projections $\{P_\alpha\}$ preserved by the dynamics;
+these are the operator-layer invariant content, and the analogue (by analogy, not
+identity) of the semantic invariant set of Chapter~\ref{ch:pic}.
+\end{corollary}
+\status{\STANDARD.}
+
+\chapter{Representation}
+\begin{definition}[Representation functor]
+$F:\mathbf{CogSys}\to\mathbf{Hilb}_{\mathrm{CIIR}}$ sends a constrained system to its
+Hilbert representation and a constraint-preserving morphism to the induced channel.
+\end{definition}
+\status{\SKETCH{} (standard for finite systems; the general case is \OPENs, with
+Stinespring naturality as the attack plan).}
+
+% ============================================================================
+\part{Dynamics}
+
+\chapter{The master equation}
+\begin{definition}[GKLS generator]
+The dynamics is the semigroup $\Phi_t=e^{tL}$ with generator
+$L(\rho)=-i[H,\rho]+\sum_k\gamma_k\big(A_k\rho A_k^\ast-\tfrac12\{A_k^\ast A_k,\rho\}\big)$,
+$\gamma_k\ge0$.
+\end{definition}
+\begin{theorem}
+A generator of GKLS form generates a strongly continuous semigroup of CPTP maps;
+conversely, in finite dimension every such semigroup has a GKLS generator.
+\end{theorem}
+\status{\STANDARD; Lindblad, Gorini--Kossakowski--Sudarshan; Hille--Yosida.}
+
+\chapter{The contraction semigroup}\label{ch:dpi}
+\begin{theorem}[Data-processing / non-expansiveness]\label{thm:dpi}
+For every CPTP map $\Phi$ and all states $\rho,\sigma$,
+$\norm{\Phi(\rho)-\Phi(\sigma)}_1\le\norm{\rho-\sigma}_1$. Hence $\{\Phi_t\}$ is a
+family of trace-norm contractions (non-strict).
+\end{theorem}
+\status{\PROVEN.}
+\begin{proof}
+Write $\rho-\sigma=\Delta_+-\Delta_-$ (Jordan decomposition, $\Delta_\pm\ge0$ of
+orthogonal support), so $\norm{\rho-\sigma}_1=\Tr\Delta_++\Tr\Delta_-$. With
+$\norm{X}_1=\sup_{-I\preceq M\preceq I}\Tr(MX)$, for admissible $M$,
+$\Tr(M(\Phi(\Delta_+)-\Phi(\Delta_-)))\le\Tr\Phi(\Delta_+)+\Tr\Phi(\Delta_-)
+=\Tr\Delta_++\Tr\Delta_-$ by positivity and trace preservation; take the supremum.
+\end{proof}
+Strictness, when present, comes from a spectral gap (Chapter~\ref{ch:gap}) or a damped
+projection (Chapters~\ref{ch:sharp},~\ref{ch:phirec}), never from the bare semigroup.
+
+\chapter{Physical admissibility}
+\begin{theorem}[GKLS admissibility]
+A generator $L$ produces CP dynamics $e^{tL}$ for all $t\ge0$ iff $L$ has GKLS form
+(equivalently, its Kossakowski matrix is positive semidefinite).
+\end{theorem}
+\status{\STANDARD.}
+\begin{construction}[Admissible projection]
+A proposed generator whose Kossakowski matrix has negative eigenvalues (e.g.\ a
+matrix-logarithm or gradient-flow generator) is not completely positive; projecting the
+Kossakowski matrix onto the positive-semidefinite cone yields the nearest admissible
+generator. All dynamics used hereafter are GKLS-admissible.
+\end{construction}
+\status{\CONSTRUCTED.}
+
+\chapter{Spectral gap and convergence}\label{ch:gap}
+\begin{theorem}[Gapped convergence]
+If $L$ has a unique steady state $\rho_{\mathrm{ss}}$ and spectral gap
+$\Delta=-\sup\{\operatorname{Re}\lambda:\lambda\in\operatorname{spec}(L),\lambda\ne0\}>0$,
+then $\norm{\Phi_t(\rho)-\rho_{\mathrm{ss}}}_1\le Ce^{-\Delta t}\norm{\rho-\rho_{\mathrm{ss}}}_1$
+($C=1$ for normal $L$).
+\end{theorem}
+\status{\DERIVED{} (under gap and uniqueness). The per-step constant is
+$\kcontr=e^{-\Delta\tau}$; the analytic determination of $\Delta$ from
+$(\mathcal M,g,\kcurv)$ is \OPENs.}
+
+\chapter{Fixed points of contractive updates}
+\begin{theorem}[Banach fixed point]
+A $c$-Lipschitz map ($c<1$) on a complete space has a unique fixed point $x^\ast$, with
+$\norm{T^kx-x^\ast}\le c^k\norm{x-x^\ast}$.
+\end{theorem}
+\status{\STANDARD{} (Banach 1922). This is the template instantiated, with a constructed
+contraction, in Chapter~\ref{ch:phirec}.}
+
+\chapter{The sharpening map}\label{ch:sharp}
+\begin{definition}
+For $\beta\in(0,1)$, the \emph{sharpening map} on $\mathcal S(\Hil)$, $\dim\Hil=d\ge2$,
+is $N_\beta(\rho)=\rho^\beta/\Tr(\rho^\beta)$ ($0^\beta:=0$).
+\end{definition}
+\begin{theorem}[Fixed-point structure]\label{thm:K}
+For every $\beta\in(0,1)$, $d\ge2$: \emph{(i)} $N_\beta$ fixes both $I/d$ and every pure
+state, hence has $\ge2$ fixed points and is not a strict contraction in any
+unitarily-invariant norm; \emph{(ii)} its Fr\'echet derivative at $I/d$ on the
+trace-zero tangent space is $\beta\cdot\mathrm{id}$; \emph{(iii)} near any pure state it
+is expansive, with local ratio $\sim\varepsilon^{\beta-1}\to\infty$.
+\end{theorem}
+\status{\PROVEN; numerically confirmed in the companion artifact (local ratio $=\beta$;
+expansion ratio $=\varepsilon^{\beta-1}$).}
+\begin{proof}
+(i) For a projector $P$, $P^\beta=P$, $\Tr P^\beta=1$, so $N_\beta(P)=P$; for $I/d$,
+$(I/d)^\beta=d^{-\beta}I$, $\Tr=d^{1-\beta}$, so $N_\beta(I/d)=I/d$. A strict contraction
+has a unique fixed point (Banach), so two fixed points preclude it.
+(ii) The derivative of $\rho\mapsto\rho^\beta$ at $cI$ is $\beta c^{\beta-1}$
+(Daleckii--Krein, equal eigenvalues); at $c=1/d$, normalizing and using $\Tr X=0$ gives
+$\beta X$.
+(iii) For $\rho_\varepsilon=(1-\varepsilon)\ket{\psi}\bra{\psi}+\varepsilon\ket{\phi}\bra{\phi}$
+($\braket{\psi|\phi}=0$), $\norm{\rho_\varepsilon-\ket{\psi}\bra{\psi}}_1=2\varepsilon$ and
+$\norm{N_\beta(\rho_\varepsilon)-\ket{\psi}\bra{\psi}}_1=2\varepsilon^\beta/Z$,
+$Z=(1-\varepsilon)^\beta+\varepsilon^\beta$; the ratio $\varepsilon^{\beta-1}/Z\to\infty$.
+\end{proof}
+\begin{remark}
+Sharpening alone is not a stabilization mechanism: $I/d$ is attracting and pure states
+repelling. A genuine stabilizer is built by damped projection.
+\end{remark}
+\begin{construction}[Damped-projection stabilizer]
+$\Phi_{\mathrm{loop}}(\rho)=P_{\mathcal A}\big((1-\delta)\rho+\delta\rho_0\big)$,
+$\delta\in(0,1]$, with $P_{\mathcal A}$ the trace-norm projection onto the closed convex
+set of $\mathcal A$-block-diagonal states. By Theorem~\ref{thm:dpi}, $\Phi_{\mathrm{loop}}$
+is a $(1-\delta)$-contraction with a unique fixed point.
+\end{construction}
+\status{\CONSTRUCTED.}
+
+% ============================================================================
+\part{Semantic stabilization}
+
+\chapter{A complete semantic metric}\label{ch:dsem}
+\begin{construction}[Fused semantic metric]
+On a finite carrier $S$: a connected weighted graph $G=(S,E,w)$ with shortest-path
+metric $\dgraph$; a Lipschitz encoder $E:S\to\mathbb R^n$ with
+$\dembed(x,y)=\norm{E(x)-E(y)}_2$; and $\dsem=\alpha\,\dgraph+(1-\alpha)\,\dembed$,
+$\alpha\in(0,1]$.
+\end{construction}
+\begin{proposition}\label{prop:metric}
+$\dsem$ is a pseudometric; a metric for $\alpha>0$; complete on $S/\!\sim$; and its
+triangle-violation rate is exactly $0$.
+\end{proposition}
+\status{\PROVEN; zero violation verified as a unit test in the companion benchmark.}
+\begin{proof}
+$\dgraph$ is a shortest-path metric and $\dembed$ the pullback of a norm; both satisfy
+(M1)--(M3); a nonnegative combination preserves each axiom; $\alpha>0$ gives
+identity-of-indiscernibles; finiteness gives completeness.
+\end{proof}
+\begin{remark}
+The construction relocates the empirical risk from structure (triangle holds by fiat) to
+faithfulness, an empirical question (Chapter~\ref{ch:falsify}). \status{\OPENs{}
+(faithfulness).}
+\end{remark}
+
+\chapter{The observer fixed point}\label{ch:pic}
+\begin{theorem}[Closure operator]\label{thm:pic}
+Let $(L,\le)$ be a complete lattice and $\PiC=R\circ O_C:L\to L$. If $\PiC$ is monotone,
+extensive, and idempotent, it is a closure operator; $\Iint:=\Fix(\PiC)$ is a nonempty
+complete lattice; and $\Grep:=\PiC$ is the unique idempotent monotone reflector onto
+$\Iint$.
+\end{theorem}
+\status{\PROVEN{} (Tarski / closure theory).}
+\begin{proof}
+Fixed-point sets of closure operators are closed under arbitrary meets, hence a complete
+lattice (Knaster--Tarski); the top element is closed, so $\Iint\ne\emptyset$; idempotency
+makes $\Grep$ a retraction, unique among monotone idempotent retractions.
+\end{proof}
+This identifies the intent set with the observer-stable set $\Iint=\Fix(\PiC)$ and the
+repair map with the closure $\Grep=\PiC$. A finite $(O_C,R)$ by Horn-clause forward
+chaining realizes the hypotheses. \status{\CONSTRUCTED{} (toy); the derivation of $\PiC$
+from constraint geometry is \OPENs.}
+
+\chapter{Recursive stabilization}\label{ch:phirec}
+\begin{definition}[Anchored stabilizer]
+With $\Iint$ nonempty closed convex, anchor $c$, damping $\delta\in(0,1]$:
+$\Phirec(x)=P_{\Iint}\big((1-\delta)x+\delta c\big)$.
+\end{definition}
+\begin{theorem}[Strict contraction]\label{thm:contraction}
+$P_{\Iint}$ is firmly non-expansive, and $\Phirec$ is a strict contraction with
+$\kcontr=1-\delta$; hence $\Phirec$ has a unique fixed point $\sigma^\ast\in\Iint$ and
+$\norm{\Phirec^k(x)-\sigma^\ast}\le(1-\delta)^k\norm{x-\sigma^\ast}$.
+\end{theorem}
+\status{\DERIVED.}
+\begin{proof}
+Metric projection onto a closed convex set in Hilbert space is firmly non-expansive:
+$\inner{u-Pu}{w-Pu}\le0$ gives $\norm{Pu-Pv}^2\le\inner{u-v}{Pu-Pv}\le\norm{u-v}\norm{Pu-Pv}$.
+The arguments of $\Phirec$ differ by $(1-\delta)(x-y)$ (the $\delta c$ cancels), so
+$\norm{\Phirec(x)-\Phirec(y)}\le(1-\delta)\norm{x-y}$; Banach applies.
+\end{proof}
+\begin{remark}
+$\delta$ is the anchoring strength, measurable as $1-(\text{observed contraction
+ratio})$. The modeling commitment is empirical (\OPENs); given it, $\kcontr<1$ is proved.
+\end{remark}
+
+\chapter{Stability and drift}
+\begin{theorem}[Convergence]
+Under Theorem~\ref{thm:contraction}, $\sigma^\ast$ is the unique equilibrium and
+$\dsem(\Phirec^k(x),\sigma^\ast)\le(1-\delta)^k\dsem(x,\sigma^\ast)\to0$.
+\end{theorem}
+\status{\DERIVED.}
+\begin{theorem}[Drift containment]\label{thm:drift}
+With $x_{k+1}=\Phirec(x_k)+e_k$, $\norm{e_k}\le\delta_{\mathrm{adv}}$,
+$\limsup_k\norm{x_k-\sigma^\ast}=\delta_{\mathrm{adv}}/(1-\kcontr)$, a positive constant.
+The system is stable to a ball of this radius; ``repaired to within $\varepsilon$'' holds
+iff $\delta_{\mathrm{adv}}/(1-\kcontr)\le\varepsilon$.
+\end{theorem}
+\status{\PROVEN.}
+\begin{proof}
+$\norm{x_{k+1}-\sigma^\ast}\le\kcontr\norm{x_k-\sigma^\ast}+\delta_{\mathrm{adv}}$; summing
+$\sum_{i<k}\kcontr^i\le1/(1-\kcontr)$ gives the bound; tightness by aligning $e_k$.
+\end{proof}
+
+\chapter{Equivocation}
+\begin{theorem}[Bounded equivocation]
+For two $\varepsilon$-valid outputs $y,y'$, $\dsem(\Grep y,\Grep y')\le\dsem(y,y')\le
+2\varepsilon$: the equilibria lie within $2\varepsilon$, not at a common point.
+\end{theorem}
+\status{\PROVEN{} (non-expansiveness of $\Grep$ and the triangle inequality).}
+\begin{theorem}[Byzantine containment]
+A Byzantine minority $f<n/3$ on the agreement substrate of Chapter~\ref{ch:substrate}
+cannot move the honest equilibrium outside the ball of Theorem~\ref{thm:drift}.
+\end{theorem}
+\status{\DERIVED{} (composition of agreement safety with the contraction).}
+
+% ============================================================================
+\part{Compositional structure and scope}
+
+\chapter{Functorial structure}
+\begin{theorem}[Functoriality on the Kleisli category]
+$F\mapsto\Grep\circ\Phirec\circ F$ is not composition-preserving on the base category
+(it would force the strict contraction $\Grep\circ\Phirec$ to be the identity), but it is
+a functor on the Kleisli/Eilenberg--Moore category of the monad $\PiC$, where the monad
+multiplication supplies the required structural map.
+\end{theorem}
+\status{\PROVEN{} (defect, by a one-line counterexample on $\mathbb R$) $+$
+\CONSTRUCTED{} (Kleisli repair).}
+\begin{theorem}[Limit versus colimit]
+The Cauchy limit of a contraction's orbit and the categorical $\omega$-colimit of the
+chain coincide only in a Cauchy-complete enrichment (America--Rutten algebraic
+compactness); in $\mathbf{Met}$ they differ in general.
+\end{theorem}
+\status{\PROVEN{} (counterexample) $+$ \SKETCH{} (the coincidence statement).}
+\begin{theorem}[Canonical realization]
+Abstraction $F_{\mathrm{sem}}$ has a right adjoint $F_{\mathrm{ont}}$ sending a state to
+its canonical (maximal-entropy) realizer, with honest unit and counit; uniqueness of all
+realizers is false (abstraction is many-to-one), and canonical realization is the correct
+statement.
+\end{theorem}
+\status{\PROVEN{} (defect) $+$ \CONSTRUCTED{} (canonical realizer).}
+
+\chapter{Demarcation}
+\begin{theorem}[Scope theorem]\label{thm:scope}
+Regard the framework as a lax monoidal functor $U:\mathbf{ConstrDom}\to\mathbf{CPTP}$.
+Then \emph{(i)} $U$ outputs CPTP channels on finite Hilbert spaces---strictly less than
+fundamental physics; and \emph{(ii)} if $U$ is total on $\mathbf{ConstrDom}$, it has no
+falsifiable content.
+\end{theorem}
+\status{\PROVEN.}
+\begin{proof}
+(i) by inspection of the codomain. (ii) a theory is falsifiable only if some observation
+is inconsistent with it; if every domain has a model, every observation is accommodated,
+so no falsifier exists.
+\end{proof}
+\begin{corollary}
+The framework is meaningful only when restricted to domains with a genuine
+data-generating process; unrestricted breadth is a defect, not a virtue.
+\end{corollary}
+\status{\PROVEN.}
+
+% ============================================================================
+\part{Verification and falsification}
+
+\chapter{A machine-checked agreement substrate}\label{ch:substrate}
+\begin{theorem}[Cross-observer agreement]
+Under a lock/unlock rule, no two correct observers decide conflicting values, for
+$n=3f+1$. Discharged by exhaustive model checking (TLC), symbolic induction over
+unbounded rounds (Apalache), and a parametric machine-checked proof of the
+quorum-intersection core (TLAPS; $143$ obligations, $0$ failed).
+\end{theorem}
+\status{\PROVEN{} (machine-checked). A falsifier is built in (removing the lock yields a
+violation); fourteen protocol-level leaves of the parametric step remain \OPENs.}
+
+\chapter{Empirical falsification}\label{ch:falsify}
+The framework is \emph{falsified} if: (F1) interface-independent invariants cannot be
+identified; (F2) cross-interface agreement performs no better than chance; (F3) stable
+knowledge cannot be reconstructed from preserved invariants.
+\begin{definition}[Pre-registered semantic test]
+On one bounded domain, with the constructed $\dsem$ and a frozen harness, faithfulness
+requires, on a held-out split: triangle-violation $=0$; rank correlation with experts
+$\rho\ge0.70$; drift-detection $\mathrm{AUC}\ge0.85$; conformal coverage $\ge0.90$.
+Falsified if every $\alpha$ reaching $\rho\ge0.70$ destroys drift detection.
+\end{definition}
+\status{\CONSTRUCTED{} (harness; synthetic self-test passes and the null collapses to
+chance). The labeled corpus is the remaining gate, \OPENs.}
+
+\chapter{Standing, open problems, and honest scope}
+The framework's value is bimodal. The agreement substrate (Chapter~\ref{ch:substrate}) is
+machine-checked and competes as engineering. The semantic layer
+(Chapters~\ref{ch:dsem}--\ref{ch:falsify}) is constructed and falsifiable but
+pre-empirical. The operator layer (Chapters~2--12) is a correct, standard open-system
+construction. The cross-domain ``universal'' reading is excluded by the demarcation
+theorem.
+
+\paragraph{Principal open obligations.}
+\begin{enumerate}[label=(O\arabic*),nosep]
+\item Faithfulness of $\dsem$ on a real labeled domain (Chapter~\ref{ch:falsify})---the
+highest-value test, gated only on expert labels.
+\item Derivation of $\PiC$ from constraint geometry (Chapter~\ref{ch:pic}).
+\item Discharge of the fourteen protocol-level leaves of the agreement proof
+(Chapter~\ref{ch:substrate}).
+\item Modeling adequacy of $\Phirec$ against labeled drift trajectories.
+\end{enumerate}
+\status{Each \OPENs, with an attack plan in the cited chapter.}
+The framework's future standing depends primarily on (O1), which is empirical.
+
+% ============================================================================
+\appendix
+\chapter{Notation and resolved symbol conventions}
+\begin{longtable}{@{}lll@{}}
+\toprule
+Symbol & Meaning & Dimension \\ \midrule
+$\kcurv$ & constraint-curvature field (Ch.~3) & $[\text{length}]^{-2}$ \\
+$\kcontr$ & Lipschitz contraction constant (Ch.~\ref{ch:phirec}) & dimensionless $\in[0,1)$ \\
+$\Phiface$ & CPTP interface map (Ch.~4) & --- \\
+$\Phirec$ & recursive stabilizer (Ch.~\ref{ch:phirec}) & --- \\
+$\PiC$ & observer closure / reflector (Ch.~\ref{ch:pic}) & --- \\
+$d_\Real$ & reality-space metric, primitive (Ch.~2) & --- \\
+$\dsem$ & constructed semantic metric (Ch.~\ref{ch:dsem}) & dimensionless \\
+$\sigma^\ast$ & unique semantic equilibrium (Ch.~16) & --- \\
+\bottomrule
+\end{longtable}
+
+\chapter{Status ledger}
+\PROVEN: \ref{thm:dpi}, \ref{thm:K}, \ref{thm:pic}, \ref{thm:drift}, the equivocation and
+agreement theorems, the functor/limit/realization defects, the scope theorem.
+\DERIVED: gapped convergence, \ref{thm:contraction}, convergence, Byzantine containment.
+\CONSTRUCTED: damped-projection stabilizer, \ref{prop:metric}'s construction, the toy
+$\PiC$, the anchored stabilizer, the Kleisli and canonical-realizer repairs, the
+falsification harness. \STANDARD: Chs.~2--7, 10--11. \OPENs: faithfulness, $\PiC$ from
+geometry, modeling adequacy, the fourteen agreement leaves, general representation.
+There are no unlabeled assertions.
+
+\chapter{Summary of principal results}
+The load-bearing results are: the data-processing theorem (Ch.~\ref{ch:dpi}); the
+sharpening-map fixed-point structure (Ch.~\ref{ch:sharp}) and the damped-projection
+stabilizer it motivates; the constructed complete semantic metric (Ch.~\ref{ch:dsem});
+the observer closure operator (Ch.~\ref{ch:pic}); the strictly contractive recursive
+stabilizer with $\kcontr=1-\delta$ (Ch.~\ref{ch:phirec}) and the sharp drift bound
+$\delta_{\mathrm{adv}}/(1-\kcontr)$; the Kleisli functoriality and canonical-realization
+results; the scope theorem; and the machine-checked agreement substrate. The operator
+foundations (Parts~I--II) are standard and labelled as such; the framework's novelty is
+in the constructions, the stabilization analysis, and the verification.
+
+% ============================================================================
+\begin{thebibliography}{99}
+\bibitem{Aumann} R.~J.~Aumann, \emph{Agreeing to Disagree}, Ann.\ Statist.\ \textbf{4}
+(1976) 1236--1239.
+\bibitem{Frigerio} A.~Frigerio, \emph{Stationary states of quantum dynamical semigroups},
+Comm.\ Math.\ Phys.\ \textbf{63} (1978) 269--276.
+\bibitem{GKS} V.~Gorini, A.~Kossakowski, E.~C.~G.~Sudarshan, \emph{Completely positive
+dynamical semigroups of $N$-level systems}, J.\ Math.\ Phys.\ \textbf{17} (1976) 821.
+\bibitem{Kechris} A.~S.~Kechris, \emph{Classical Descriptive Set Theory}, Springer, 1995.
+\bibitem{Kraus} K.~Kraus, \emph{States, Effects, and Operations}, Springer LNP \textbf{190},
+1983.
+\bibitem{Lindblad76} G.~Lindblad, \emph{On the generators of quantum dynamical
+semigroups}, Comm.\ Math.\ Phys.\ \textbf{48} (1976) 119--130.
+\bibitem{Lindblad75} G.~Lindblad, \emph{Completely positive maps and entropy
+inequalities}, Comm.\ Math.\ Phys.\ \textbf{40} (1975) 147--151.
+\bibitem{Petz86} D.~Petz, \emph{Sufficient subalgebras and the relative entropy of states
+of a von Neumann algebra}, Comm.\ Math.\ Phys.\ \textbf{105} (1986) 123--131.
+\bibitem{Stinespring} W.~F.~Stinespring, \emph{Positive functions on $C^\ast$-algebras},
+Proc.\ Amer.\ Math.\ Soc.\ \textbf{6} (1955) 211--216.
+\bibitem{Tarski} A.~Tarski, \emph{A lattice-theoretical fixpoint theorem and its
+applications}, Pacific J.\ Math.\ \textbf{5} (1955) 285--309.
+\bibitem{Uhlmann77} A.~Uhlmann, \emph{Relative entropy and the
+Wigner--Yanase--Dyson--Lieb concavity}, Comm.\ Math.\ Phys.\ \textbf{54} (1977) 21--32.
+\bibitem{Wolf} M.~M.~Wolf, \emph{Quantum Channels and Operations: Guided Tour}, lecture
+notes, 2012.
+\bibitem{Zurek} W.~H.~Zurek, \emph{Quantum Darwinism}, Nature Physics \textbf{5} (2009)
+181--188.
+\end{thebibliography}
+
+\end{document}

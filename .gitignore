@@ -18,3 +18,8 @@ papers/interface-limited-realism/*.log
 papers/interface-limited-realism/*.toc
 papers/interface-limited-realism/*.out
 papers/interface-limited-realism/*.pdf
+papers/cir-monograph/*.aux
+papers/cir-monograph/*.log
+papers/cir-monograph/*.toc
+papers/cir-monograph/*.out
+papers/cir-monograph/*.pdf
